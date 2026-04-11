@@ -62,14 +62,14 @@ Paste any text, choose a redaction mode, and see instant results — 100% client
 <dependency>
   <groupId>io.github.sushegaad</groupId>
   <artifactId>semantic-privacy-guard</artifactId>
-  <version>0.2.0</version>
+  <version>1.4.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'io.github.sushegaad:semantic-privacy-guard:0.2.0'
+implementation 'io.github.sushegaad:semantic-privacy-guard:1.4.0'
 ```
 
 ### One-liner usage
