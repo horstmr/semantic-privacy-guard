@@ -68,7 +68,7 @@ class XmlRedactorTest {
               <ssn>234-56-7890</ssn>
               <contact>
                 <email>jane.doe@hospital.org</email>
-                <phone>(555) 123-4567</phone>
+                <phone>(555) 867-5309</phone>
               </contact>
             </patient>""";
 
@@ -77,7 +77,7 @@ class XmlRedactorTest {
         String content = out.getRedactedContent();
         assertFalse(content.contains("234-56-7890"), "SSN should be redacted");
         assertFalse(content.contains("jane.doe@hospital.org"), "Email should be redacted");
-        assertFalse(content.contains("123-4567"), "Phone should be redacted");
+        assertFalse(content.contains("867-5309"), "Phone should be redacted");
         assertTrue(out.getMatchCount() >= 3);
     }
 
