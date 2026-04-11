@@ -12,6 +12,9 @@ import com.semanticprivacyguard.nlp.NLPModelException;
 import com.semanticprivacyguard.nlp.NLPModelLoader;
 import com.semanticprivacyguard.stream.StreamProcessor;
 import com.semanticprivacyguard.stream.StreamRedactionSummary;
+import com.semanticprivacyguard.structured.JsonRedactor;
+import com.semanticprivacyguard.structured.StructuredRedactionOutput;
+import com.semanticprivacyguard.structured.XmlRedactor;
 import com.semanticprivacyguard.tokenizer.PIITokenizer;
 import com.semanticprivacyguard.tokenizer.PIITokenizer.RedactionOutput;
 
@@ -83,7 +86,7 @@ import java.util.List;
 public final class SemanticPrivacyGuard {
 
     /** Library version, aligned with pom.xml. */
-    public static final String VERSION = "1.2.0";
+    public static final String VERSION = "0.2.0";
 
     private final SPGConfig         config;
     private final CompositeDetector detector;
@@ -277,13 +280,82 @@ public final class SemanticPrivacyGuard {
         return streamProcessor().redact(inputFile, outputFile);
     }
 
+    // ── Structured-document API ───────────────────────────────────────────────
+
+    /**
+     * Redacts PII from a JSON document while preserving its structure.
+     *
+     * <p>Every string value in the JSON tree (including nested objects and arrays)
+     * is scanned with the full detection pipeline.  Numbers, booleans, and nulls
+     * are passed through untouched.  Token counters are document-scoped so
+     * {@code [EMAIL_1]} in one field and {@code [EMAIL_2]} in another are globally
+     * unique across the whole document.</p>
+     *
+     * <p><b>Requires</b> {@code com.fasterxml.jackson.core:jackson-databind} on
+     * the runtime classpath (declared {@code optional} in SPG's POM).  If Jackson
+     * is absent an {@link UnsupportedOperationException} is thrown.</p>
+     *
+     * <pre>{@code
+     * StructuredRedactionOutput out = spg.redactJson("""
+     *     {"name": "Alice Johnson", "email": "alice@acme.com", "age": 34}
+     *     """);
+     * // out.getRedactedContent()
+     * // → {"name":"[NAME_1]","email":"[EMAIL_1]","age":34}
+     * }</pre>
+     *
+     * @param json a valid JSON string (object, array, or scalar)
+     * @return the redacted JSON with a reverse map and match count
+     * @throws IOException                   if {@code json} is not valid JSON
+     * @throws UnsupportedOperationException if jackson-databind is not on the classpath
+     */
+    public StructuredRedactionOutput redactJson(String json) throws IOException {
+        try {
+            return new JsonRedactor(detector, tokenizer, config).redact(json);
+        } catch (NoClassDefFoundError e) {
+            throw new UnsupportedOperationException(
+                "redactJson() requires jackson-databind on the classpath. "
+              + "Add: com.fasterxml.jackson.core:jackson-databind to your project dependencies.",
+                e);
+        }
+    }
+
+    /**
+     * Redacts PII from an XML document while preserving its structure.
+     *
+     * <p>All text nodes, CDATA sections, and attribute values are scanned with
+     * the full detection pipeline.  Element names and processing instructions are
+     * not modified.  Token counters are document-scoped.  XXE protections are
+     * enabled by default.</p>
+     *
+     * <p>No extra dependencies are required — uses {@code javax.xml} from the JDK.</p>
+     *
+     * <pre>{@code
+     * StructuredRedactionOutput out = spg.redactXml("""
+     *     <user>
+     *       <name>Alice Johnson</name>
+     *       <email>alice@acme.com</email>
+     *     </user>
+     *     """);
+     * // out.getRedactedContent()
+     * // → <user><name>[NAME_1]</name><email>[EMAIL_1]</email></user>
+     * }</pre>
+     *
+     * @param xml a well-formed XML string
+     * @return the redacted XML with a reverse map and match count
+     * @throws IOException if {@code xml} is not well-formed or an I/O error occurs
+     */
+    public StructuredRedactionOutput redactXml(String xml) throws IOException {
+        return new XmlRedactor(detector, tokenizer, config).redact(xml);
+    }
+
     // ── Private ───────────────────────────────────────────────────────────────
 
     private static CompositeDetector buildDetector(SPGConfig cfg) {
         List<PIIDetector> detectors = new ArrayList<>();
 
         if (cfg.isHeuristicEnabled()) {
-            detectors.add(new HeuristicDetector(cfg.getEnabledTypes()));
+            detectors.add(new HeuristicDetector(
+                cfg.getEnabledTypes(), cfg.getCustomPatterns()));
         }
         if (cfg.isMlEnabled()) {
             detectors.add(new MLDetector(

@@ -323,7 +323,8 @@ public final class StreamProcessor {
         List<PIIDetector> detectors = new ArrayList<>();
 
         if (cfg.isHeuristicEnabled()) {
-            detectors.add(new HeuristicDetector(cfg.getEnabledTypes()));
+            detectors.add(new HeuristicDetector(
+                cfg.getEnabledTypes(), cfg.getCustomPatterns()));
         }
         if (cfg.isMlEnabled()) {
             detectors.add(new MLDetector(

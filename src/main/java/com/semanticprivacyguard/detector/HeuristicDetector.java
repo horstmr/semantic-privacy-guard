@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.semanticprivacyguard.config.CustomPattern;
 import com.semanticprivacyguard.model.PIIMatch;
 import com.semanticprivacyguard.model.PIIMatch.DetectionSource;
 import com.semanticprivacyguard.model.PIIType;
@@ -37,20 +38,37 @@ public final class HeuristicDetector implements PIIDetector {
     private static final double API_KEY_MIN_ENTROPY = 3.5;
 
     /** PII types to include; if empty, all types are included. */
-    private final Set<PIIType> enabledTypes;
+    private final Set<PIIType>      enabledTypes;
 
-    /** Creates a detector that checks all PII types. */
+    /** Caller-registered custom patterns, applied after all built-in patterns. */
+    private final List<CustomPattern> customPatterns;
+
+    /** Creates a detector that checks all built-in PII types with no custom patterns. */
     public HeuristicDetector() {
-        this.enabledTypes = Set.of(); // empty = all enabled
+        this.enabledTypes   = Set.of();
+        this.customPatterns = List.of();
     }
 
     /**
-     * Creates a detector that checks only the specified types.
+     * Creates a detector that checks only the specified types, with no custom patterns.
      *
      * @param enabledTypes subset of types to check; must not be {@code null}
      */
     public HeuristicDetector(Set<PIIType> enabledTypes) {
-        this.enabledTypes = Set.copyOf(enabledTypes);
+        this.enabledTypes   = Set.copyOf(enabledTypes);
+        this.customPatterns = List.of();
+    }
+
+    /**
+     * Creates a detector with a restricted type set <em>and</em> additional
+     * caller-supplied patterns.
+     *
+     * @param enabledTypes   subset of built-in types to check (empty = all)
+     * @param customPatterns additional regex patterns from {@link com.semanticprivacyguard.config.SPGConfig}
+     */
+    public HeuristicDetector(Set<PIIType> enabledTypes, List<CustomPattern> customPatterns) {
+        this.enabledTypes   = Set.copyOf(enabledTypes);
+        this.customPatterns = List.copyOf(customPatterns);
     }
 
     @Override
@@ -74,6 +92,14 @@ public final class HeuristicDetector implements PIIDetector {
         if (isEnabled(PIIType.DATE_OF_BIRTH)) detectDob(text, results);
         if (isEnabled(PIIType.COORDINATES)) detectCoordinates(text, results);
         if (isEnabled(PIIType.BANK_ACCOUNT)) detectBankNumbers(text, results);
+
+        // Custom caller-registered patterns (applied after built-ins so built-in
+        // matches always win for overlapping spans at the CompositeDetector level)
+        for (CustomPattern cp : customPatterns) {
+            if (isEnabled(cp.getType())) {
+                addAll(text, cp.getPattern(), cp.getType(), cp.getConfidence(), results);
+            }
+        }
 
         return results;
     }

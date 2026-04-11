@@ -11,7 +11,7 @@
        ================================================================ -->
   <groupId>io.github.sushegaad</groupId>
   <artifactId>semantic-privacy-guard</artifactId>
-  <version>1.2.0</version>
+  <version>0.2.0</version>
   <packaging>jar</packaging>
 
   <name>Semantic Privacy Guard</name>
@@ -73,6 +73,7 @@
     <!-- Dependency versions -->
     <junit.version>5.10.2</junit.version>
     <opennlp.version>2.3.3</opennlp.version>
+    <jackson.version>2.17.0</jackson.version>
   </properties>
 
   <dependencies>
@@ -86,6 +87,17 @@
       <groupId>org.apache.opennlp</groupId>
       <artifactId>opennlp-tools</artifactId>
       <version>${opennlp.version}</version>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- ===== Jackson Databind — optional; enables redactJson() API ============
+         Mark as optional so library users who only call redactXml() or plain
+         redact() never pull in the Jackson jars transitively.
+         Users who call redactJson() must add this dependency themselves.  -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
       <optional>true</optional>
     </dependency>
 

@@ -5,8 +5,10 @@ import com.semanticprivacyguard.model.PIIType;
 import com.semanticprivacyguard.tokenizer.PIITokenizer.RedactionMode;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -60,10 +62,11 @@ public final class SPGConfig {
     private final Set<PIIType>   enabledTypes;           // empty = all types
     private final int            minimumSeverity;
     private final boolean        buildReverseMap;
-    private final boolean        heuristicEnabled;
-    private final boolean        mlEnabled;
-    private final boolean        nlpEnabled;
-    private final Path           nlpModelsDirectory;     // null = load from classpath
+    private final boolean            heuristicEnabled;
+    private final boolean            mlEnabled;
+    private final boolean            nlpEnabled;
+    private final Path               nlpModelsDirectory;     // null = load from classpath
+    private final List<CustomPattern> customPatterns;
 
     private SPGConfig(Builder b) {
         this.redactionMode          = b.redactionMode;
@@ -79,6 +82,8 @@ public final class SPGConfig {
         this.mlEnabled              = b.mlEnabled;
         this.nlpEnabled             = b.nlpEnabled;
         this.nlpModelsDirectory     = b.nlpModelsDirectory;
+        this.customPatterns         = Collections.unmodifiableList(
+                                          new ArrayList<>(b.customPatterns));
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
@@ -98,7 +103,13 @@ public final class SPGConfig {
      * Returns the directory from which OpenNLP model files are loaded,
      * or {@code null} if models should be loaded from the classpath.
      */
-    public Path          getNlpModelsDirectory()    { return nlpModelsDirectory;    }
+    public Path               getNlpModelsDirectory() { return nlpModelsDirectory; }
+
+    /**
+     * Returns the unmodifiable list of caller-registered custom patterns.
+     * Empty if no patterns were added via {@link Builder#addPattern}.
+     */
+    public List<CustomPattern> getCustomPatterns()    { return customPatterns;     }
 
     // ── Factory ───────────────────────────────────────────────────────────────
 
@@ -121,10 +132,11 @@ public final class SPGConfig {
         private Set<PIIType>  enabledTypes           = EnumSet.noneOf(PIIType.class);
         private int           minimumSeverity        = DEFAULT_MIN_SEVERITY;
         private boolean       buildReverseMap        = DEFAULT_BUILD_REVERSE_MAP;
-        private boolean       heuristicEnabled       = DEFAULT_HEURISTIC_ENABLED;
-        private boolean       mlEnabled              = DEFAULT_ML_ENABLED;
-        private boolean       nlpEnabled             = DEFAULT_NLP_ENABLED;
-        private Path          nlpModelsDirectory     = null;
+        private boolean            heuristicEnabled   = DEFAULT_HEURISTIC_ENABLED;
+        private boolean            mlEnabled          = DEFAULT_ML_ENABLED;
+        private boolean            nlpEnabled         = DEFAULT_NLP_ENABLED;
+        private Path               nlpModelsDirectory = null;
+        private List<CustomPattern> customPatterns    = new ArrayList<>();
 
         private Builder() {}
 
@@ -261,6 +273,45 @@ public final class SPGConfig {
             return this;
         }
 
+        /**
+         * Registers a custom regex pattern for detecting organisation-specific PII
+         * that is not covered by the built-in heuristics.
+         *
+         * <p>Patterns are evaluated by {@code HeuristicDetector} after all built-in
+         * patterns, so built-in detections always take precedence for overlapping
+         * spans.  Multiple calls to this method accumulate patterns.</p>
+         *
+         * <pre>{@code
+         * SPGConfig.builder()
+         *     .addPattern(PIIType.GENERIC_PII, "EMP-\\d{6}", 0.99, "Employee ID")
+         *     .addPattern(PIIType.GENERIC_PII, "MRN-[A-Z0-9]{8}", 0.98, "Medical Record Number")
+         *     .build();
+         * }</pre>
+         *
+         * @param type        PII type to assign to matches
+         * @param regex       Java regular expression
+         * @param confidence  confidence in {@code (0.0, 1.0]}
+         * @param description human-readable label for logs and audit reports
+         * @return this builder
+         */
+        public Builder addPattern(PIIType type, String regex,
+                                  double confidence, String description) {
+            customPatterns.add(new CustomPattern(type, regex, confidence, description));
+            return this;
+        }
+
+        /**
+         * Registers a custom regex pattern without a description label.
+         *
+         * @param type       PII type to assign to matches
+         * @param regex      Java regular expression
+         * @param confidence confidence in {@code (0.0, 1.0]}
+         * @return this builder
+         */
+        public Builder addPattern(PIIType type, String regex, double confidence) {
+            return addPattern(type, regex, confidence, null);
+        }
+
         /** Builds and returns an immutable {@link SPGConfig}. */
         public SPGConfig build() {
             if (!heuristicEnabled && !mlEnabled && !nlpEnabled) {
@@ -277,11 +328,12 @@ public final class SPGConfig {
         return String.format(
             "SPGConfig{mode=%s, mlThreshold=%.2f, nlpThreshold=%.2f, "
           + "enabledTypes=%s, minSeverity=%d, reverseMap=%b, "
-          + "heuristic=%b, ml=%b, nlp=%b, nlpModels=%s}",
+          + "heuristic=%b, ml=%b, nlp=%b, nlpModels=%s, customPatterns=%d}",
             redactionMode, mlConfidenceThreshold, nlpConfidenceThreshold,
             enabledTypes.isEmpty() ? "ALL" : enabledTypes,
             minimumSeverity, buildReverseMap,
             heuristicEnabled, mlEnabled, nlpEnabled,
-            nlpModelsDirectory != null ? nlpModelsDirectory : "classpath");
+            nlpModelsDirectory != null ? nlpModelsDirectory : "classpath",
+            customPatterns.size());
     }
 }
