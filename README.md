@@ -220,6 +220,7 @@ NLP results flow through the same `CompositeDetector` de-duplication as heuristi
 | `IP_ADDRESS` | `192.168.1.100` | Regex (range-validated) | 4 |
 | `ORGANIZATION` | `Barclays Bank PLC` | Naive Bayes ML + OpenNLP NER | 3 |
 | `COORDINATES` | `51.5074, -0.1278` | Regex (bounds-checked) | 3 |
+| `GENERIC_PII` | `EMP-042731` | Custom Pattern Registry | 5 |
 
 ---
 
@@ -243,6 +244,18 @@ Fast pre-flight check (~30% faster than `redact()`) for yes/no answers.
 ### `analyse(String text)` → `List<PIIMatch>`
 
 Detection without redaction — for audit and reporting pipelines.
+
+### `redactJson(String json)` → `StructuredRedactionOutput`
+
+Redacts PII inside a JSON document. String values are replaced in-place; keys, numbers, booleans, and arrays are preserved. Throws `UnsupportedOperationException` if `jackson-databind` is not on the classpath. Throws `IOException` for malformed JSON.
+
+### `redactXml(String xml)` → `StructuredRedactionOutput`
+
+Redacts PII inside an XML document. Text nodes and attribute values are replaced in-place; element names, structure, and non-string content are preserved. No extra dependency required (uses JDK `javax.xml`). Throws `IOException` for malformed XML.
+
+### `SPGConfig.Builder.addPattern(PIIType, String regex, double confidence, String description)` → `Builder`
+
+Registers a custom regex pattern applied by `HeuristicDetector` after all built-in patterns. Multiple calls accumulate. The 3-arg overload omits the description (defaults to the regex string).
 
 ### Stream methods
 
@@ -275,6 +288,9 @@ SPGConfig config = SPGConfig.builder()
     .buildReverseMap(true)                 // disable for slight perf gain
     .heuristicEnabled(true)
     .mlEnabled(true)
+    // Custom organisation-specific patterns (see Custom Pattern Registry below)
+    .addPattern(PIIType.GENERIC_PII, "EMP-\\d{6}", 0.99, "Employee ID")
+    .addPattern(PIIType.GENERIC_PII, "MRN-[A-Z0-9]{8}", 0.98, "Medical Record Number")
     .build();
 ```
 
@@ -285,6 +301,93 @@ SPGConfig config = SPGConfig.builder()
 | `TOKEN` | `[EMAIL_1]` | LLM pipelines — structure preserved |
 | `MASK` | `█████████████████` | Logs, audit trails |
 | `BLANK` | `[REDACTED]` | Human-readable reports |
+
+---
+
+## Custom Pattern Registry
+
+Register organisation-specific identifiers that built-in heuristics don't cover — employee IDs, medical record numbers, internal reference codes, or any proprietary format.
+
+```java
+SPGConfig config = SPGConfig.builder()
+    .addPattern(PIIType.GENERIC_PII, "EMP-\\d{6}",          0.99, "Employee ID")
+    .addPattern(PIIType.GENERIC_PII, "MRN-[A-Z0-9]{8}",     0.98, "Medical Record Number")
+    .addPattern(PIIType.GENERIC_PII, "POL-[A-Z]{2}-\\d{8}", 0.97, "Policy Number")
+    .build();
+
+SemanticPrivacyGuard spg = SemanticPrivacyGuard.create(config);
+
+RedactionResult r = spg.redact(
+    "Task EMP-042731 relates to policy POL-GB-00123456.");
+// → "Task [PII_1] relates to policy [PII_2]."
+```
+
+Custom patterns are applied by `HeuristicDetector` after all built-in patterns, so built-in matches always win for overlapping spans. Token counters are document-scoped: two `EMP-` matches in the same call produce `[PII_1]` and `[PII_2]`, never two `[PII_1]` tokens.
+
+Multiple calls to `.addPattern()` accumulate — they do not replace each other.
+
+---
+
+## JSON / XML Redaction
+
+Redact PII directly inside structured documents. Text values are replaced in-place; keys, numbers, booleans, and markup structure are preserved exactly.
+
+### JSON
+
+Requires `jackson-databind` on the classpath (not bundled — add it to your own `pom.xml`):
+
+```xml
+<dependency>
+  <groupId>com.fasterxml.jackson.core</groupId>
+  <artifactId>jackson-databind</artifactId>
+  <version>2.17.0</version>
+</dependency>
+```
+
+```java
+SemanticPrivacyGuard spg = SemanticPrivacyGuard.create();
+
+StructuredRedactionOutput out = spg.redactJson("""
+    {
+      "name": "Alice Johnson",
+      "email": "alice@example.com",
+      "account": 12345
+    }
+    """);
+
+System.out.println(out.getRedactedContent());
+// → {"name":"[PERSON_NAME_1]","email":"[EMAIL_1]","account":12345}
+
+System.out.println(out.getMatchCount());   // → 2
+System.out.println(out.getReverseMap());   // → {[PERSON_NAME_1]=Alice Johnson, [EMAIL_1]=alice@example.com}
+```
+
+### XML
+
+Uses the JDK built-in `javax.xml` — no extra dependency required. XXE injection is hardened by disabling DOCTYPE declarations and external entity loading.
+
+```java
+StructuredRedactionOutput out = spg.redactXml("""
+    <?xml version="1.0"?>
+    <user>
+      <name>Alice Johnson</name>
+      <email>alice@example.com</email>
+      <id>12345</id>
+    </user>
+    """);
+
+System.out.println(out.getRedactedContent());
+// → <?xml version="1.0"?><user><name>[PERSON_NAME_1]</name><email>[EMAIL_1]</email><id>12345</id></user>
+```
+
+`StructuredRedactionOutput` fields:
+
+| Method | Returns |
+|---|---|
+| `getRedactedContent()` | Redacted JSON or XML string |
+| `getReverseMap()` | `Map<String, String>` token → original value |
+| `getMatchCount()` | Total PII matches found |
+| `hasPII()` | `true` if any PII was detected |
 
 ---
 
@@ -361,7 +464,7 @@ try (var exec = Executors.newVirtualThreadPerTaskExecutor()) {
 | **SPG Full (H + ML)** | **206,000 sentences/s** | **0%** |
 | SPG Full + NLP | ~45,000 sentences/s* | 0% |
 
-\* NLP throughput depends on model size and JVM warmup. Stream processing throughput is I/O-bound rather than CPU-bound. See [docs/benchmarks.md](docs/benchmarks.md) for full methodology.
+\* NLP throughput depends on model size and JVM warmup. Stream processing throughput is I/O-bound rather than CPU-bound. See the [CI benchmark runs](https://github.com/Sushegaad/Semantic-Privacy-Guard/actions) for latest numbers.
 
 ---
 
