@@ -115,7 +115,7 @@ class CustomPatternTest {
             .build();
         SemanticPrivacyGuard spg = SemanticPrivacyGuard.create(config);
 
-        RedactionResult result = spg.redact("Assigned to EMP-042731 for review.");
+        RedactionResult result = spg.redact("Task EMP-042731 is pending.");
 
         assertTrue(result.getRedactedText().contains("[PII_1]"),
             "Employee ID should be tokenised to [PII_1]");
