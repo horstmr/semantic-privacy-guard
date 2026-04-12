@@ -117,8 +117,8 @@ class CustomPatternTest {
 
         RedactionResult result = spg.redact("Assigned to EMP-042731 for review.");
 
-        assertTrue(result.getRedactedText().contains("[GENERIC_PII_1]"),
-            "Employee ID should be tokenised to [GENERIC_PII_1]");
+        assertTrue(result.getRedactedText().contains("[PII_1]"),
+            "Employee ID should be tokenised to [PII_1]");
         assertFalse(result.getRedactedText().contains("EMP-042731"),
             "Original employee ID should be removed");
         assertEquals(1, result.getMatchCount());
@@ -135,9 +135,9 @@ class CustomPatternTest {
             "Reviewers: EMP-000001, EMP-000002, EMP-000003.");
 
         String redacted = result.getRedactedText();
-        assertTrue(redacted.contains("[GENERIC_PII_1]"), "First employee ID missing");
-        assertTrue(redacted.contains("[GENERIC_PII_2]"), "Second employee ID missing");
-        assertTrue(redacted.contains("[GENERIC_PII_3]"), "Third employee ID missing");
+        assertTrue(redacted.contains("[PII_1]"), "First employee ID missing");
+        assertTrue(redacted.contains("[PII_2]"), "Second employee ID missing");
+        assertTrue(redacted.contains("[PII_3]"), "Third employee ID missing");
         assertEquals(3, result.getMatchCount());
     }
 
