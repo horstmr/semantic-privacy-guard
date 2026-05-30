@@ -209,11 +209,12 @@
     <h1>Voos 3D</h1>
     <p class="lede">Martin R. Horst 2007–2026. Arraste para girar, role para zoom.</p>
     <div class="controls" id="controls"></div>
+    <button id="toggle-spin" class="active" type="button">Auto-giro</button>
   </section>
 
   <aside class="status" aria-live="polite">
     <strong id="selected-title">Rede global</strong>
-    <span id="selected-copy" style="display:none"></span>
+    <span id="selected-copy" style="font-size:11px;color:var(--cyan);margin-bottom:8px;display:block"></span>
     <div class="metric-row">
       <div class="metric">
         <b id="metric-airports">0</b>
@@ -252,6 +253,7 @@
 
     let currentYear = 2017;
     let currentType = null;
+    let spinning = true;
 
     // Build airport data
     const airportList = Object.entries(AP).map(([code, [lng, lat]]) => ({
@@ -299,10 +301,11 @@
       .pointLat('lat')
       .pointLng('lng')
       .pointAltitude(0.025)
-      .pointRadius(0.28)
+      .pointRadius(0.14)
       .pointResolution(12)
       .pointColor('color')
       .pointLabel(p => `<div class="globe-tooltip"><strong>${p.id}</strong></div>`)
+      .pointAltitudeUsage('radius')
       .arcsData(getRoutes())
       .arcColor('color')
       .arcDashLength(0.4)
@@ -345,8 +348,16 @@
       document.querySelector('#metric-routes').textContent = routes.length;
       document.querySelector('#metric-airports').textContent = airports.size;
       document.querySelector('#metric-year').textContent = currentYear;
-      document.querySelector('#selected-title').textContent = `Ano ${currentYear}`;
+      document.querySelector('#selected-title').textContent = `${currentYear}`;
+      document.querySelector('#selected-copy').textContent = `${airports.size} aeroportos · ${routes.length} rotas`;
     }
+
+    // Auto-giro button
+    document.querySelector('#toggle-spin').addEventListener('click', (e) => {
+      spinning = !spinning;
+      globe.controls().autoRotate = spinning;
+      e.target.classList.toggle('active', spinning);
+    });
 
     window.addEventListener('resize', () => {
       globe.width(window.innerWidth).height(window.innerHeight);
