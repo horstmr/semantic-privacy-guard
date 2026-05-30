@@ -433,15 +433,15 @@ const char* HTML_PAGE = R"(
 </head>
 <body>
   <div class="container">
-    <h1>▶ PIXEL QUEST</h1>
+    <h1>PIXEL QUEST</h1>
 
     <div class="control-group">
-      <label>Título:</label>
+      <label>Titulo:</label>
       <input type="text" id="title" value="PIXEL  QUEST" maxlength="20">
     </div>
 
     <div class="control-group">
-      <label>Subtítulo:</label>
+      <label>Subtitulo:</label>
       <input type="text" id="subtitle" value="- nivel 1 -" maxlength="15">
     </div>
 
@@ -452,15 +452,15 @@ const char* HTML_PAGE = R"(
     </div>
 
     <div class="button-group">
-      <button class="play" onclick="sendCmd('play')">▶ PLAY</button>
-      <button class="pause" onclick="sendCmd('pause')">⏸ PAUSE</button>
-      <button class="color" onclick="sendCmd('color')">🎨 CORES</button>
+      <button class="play" onclick="sendCmd('play')">PLAY</button>
+      <button class="pause" onclick="sendCmd('pause')">PAUSE</button>
+      <button class="color" onclick="sendCmd('color')">CORES</button>
     </div>
 
     <div class="info">
       <strong>Conectado ao:</strong> PIXEL_QUEST<br>
       <strong>IP:</strong> 192.168.4.1<br>
-      <strong>Próximo: WiFi remoto em breve!</strong>
+      <strong>Status:</strong> Online
     </div>
   </div>
 
