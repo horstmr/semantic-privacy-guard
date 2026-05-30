@@ -24,8 +24,8 @@
 // ---- pinos (ESP32-C3 Super Mini) ----
 #define TFT_MOSI 6    // SDA do display
 #define TFT_SCLK 4    // SCL do display
-#define TFT_CS    7   // CS
-#define TFT_DC    5   // DC
+#define TFT_CS    5   // CS (era 7 - INVERTIDO!)
+#define TFT_DC    7   // DC (era 5 - INVERTIDO!)
 #define TFT_RST  10   // RST
 #define TFT_BL    1   // BL (backlight)
 #define TFT_BACKLIGHT_ON HIGH
