@@ -87,7 +87,7 @@ const globeG=new THREE.Group();scene.add(globeG);
 // Ocean sphere
 globeG.add(new THREE.Mesh(
   new THREE.SphereGeometry(1,64,64),
-  new THREE.MeshPhongMaterial({color:0x0a1428,emissive:0x05101f,shininess:12,specular:0x113355})
+  new THREE.MeshPhongMaterial({color:0x0d1f3c,emissive:0x081828,shininess:25,specular:0x223366})
 ));
 // Faint graticule
 globeG.add(new THREE.Mesh(
@@ -102,8 +102,8 @@ function ll2v(lat,lon,r=1){
 
 // Draw coastlines on globe — tries to load detailed countries from CDN
 // (works when opened locally / online); falls back to embedded COAST offline.
-const coastMat=new THREE.LineBasicMaterial({color:0x3a6090,opacity:.55,transparent:true});
-const landMat=new THREE.LineBasicMaterial({color:0x3a6090,opacity:.5,transparent:true});
+const coastMat=new THREE.LineBasicMaterial({color:0x5588dd,opacity:.75,transparent:true,linewidth:1.5});
+const landMat=new THREE.LineBasicMaterial({color:0x5588dd,opacity:.7,transparent:true,linewidth:1.2});
 let coastObjs=[];
 
 function drawEmbeddedCoast(){
@@ -160,8 +160,9 @@ fetch(CDN_MAP).then(r=>{if(!r.ok)throw 0;return r.json();}).then(topo=>{
   const b=document.getElementById('netbadge');if(b){b.textContent='● mapa offline';b.style.color='#a85';}
 });
 
-scene.add(new THREE.AmbientLight(0x445577,1.4));
-const dl=new THREE.DirectionalLight(0x88aaff,1.4);dl.position.set(4,3,5);scene.add(dl);
+scene.add(new THREE.AmbientLight(0x556688,1.8));
+const dl=new THREE.DirectionalLight(0x99bbff,1.8);dl.position.set(4,3,5);scene.add(dl);
+const hl=new THREE.HemisphereLight(0x3d6fff,0x0a1428,1.2);scene.add(hl);
 
 function gcV(lo1,la1,lo2,la2){
   const v1=ll2v(la1,lo1).normalize(), v2=ll2v(la2,lo2).normalize();
@@ -198,14 +199,14 @@ function draw(){
     if(!AP[f.o]||!AP[f.d])return;
     const [lo1,la1]=AP[f.o],[lo2,la2]=AP[f.d];
     const g=new THREE.BufferGeometry().setFromPoints(gcV(lo1,la1,lo2,la2));
-    const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(TC[f.t]||TC.default),opacity:.9,transparent:true,depthTest:true,depthWrite:false}));
+    const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(TC[f.t]||TC.default),opacity:1,transparent:true,depthTest:true,depthWrite:false,linewidth:3,fog:false}));
     globeG.add(l);gLines.push(l);
   });
   aps.forEach(code=>{
     if(!AP[code])return;
     const [lon,lat]=AP[code];
     const isCWB=code==='CWB';
-    const m=new THREE.Mesh(dg,new THREE.MeshBasicMaterial({color:isCWB?0xffcc44:0x55aaff}));
+    const m=new THREE.Mesh(dg,new THREE.MeshBasicMaterial({color:isCWB?0xffdd44:0x77ccff,emissive:isCWB?0xffaa00:0x3388ff}));
     m.position.copy(ll2v(lat,lon,1.01));
     globeG.add(m);gLines.push(m);
   });
