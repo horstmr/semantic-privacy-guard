@@ -57,32 +57,34 @@ function ll2v(lat,lon,r=1){
   );
 }
 
-// Desenhar continentes (preenchidos)
+// Desenhar continentes
 function drawLands(){
   COAST.forEach(poly=>{
     const pts=[];
 
-    // Criar pontos interpolados na superfície
     for(let i=0;i<poly.length-1;i++){
       const [lon1,lat1]=poly[i];
       const [lon2,lat2]=poly[i+1];
-      const segments=Math.max(2,Math.ceil(Math.hypot(lon2-lon1,lat2-lat1)/2));
+      const segs=Math.max(2,Math.ceil(Math.hypot(lon2-lon1,lat2-lat1)/1.5));
 
-      for(let j=0;j<=segments;j++){
-        const t=j/segments;
-        const lat=lat1+(lat2-lat1)*t;
-        const lon=lon1+(lon2-lon1)*t;
-        pts.push(ll2v(lat,lon,1.001));
+      for(let j=0;j<=segs;j++){
+        const t=j/segs;
+        pts.push(ll2v(lat1+(lat2-lat1)*t,lon1+(lon2-lon1)*t,1.0015));
       }
     }
 
-    // Renderizar linha de costa (verde escuro)
-    const geom=new THREE.BufferGeometry().setFromPoints(pts);
-    const line=new THREE.Line(
-      geom,
-      new THREE.LineBasicMaterial({color:0x2d8659,linewidth:2,opacity:1})
-    );
-    globe.add(line);
+    // Desenhar como cilindros (tubos)
+    for(let i=0;i<pts.length-1;i++){
+      const p1=pts[i],p2=pts[i+1];
+      const mid=new THREE.Vector3().addVectors(p1,p2).multiplyScalar(0.5);
+      const len=p1.distanceTo(p2);
+      const tube=new THREE.CylinderGeometry(0.004,0.004,len,6);
+      const mesh=new THREE.Mesh(tube,new THREE.MeshBasicMaterial({color:0x22c55e}));
+      mesh.position.copy(mid);
+      mesh.lookAt(p2);
+      mesh.rotateX(Math.PI/2);
+      globe.add(mesh);
+    }
   });
 }
 
