@@ -80,7 +80,7 @@ function ll2v(lat,lon,r=1){
   return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(th),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(th));
 }
 
-const coastMat=new THREE.LineBasicMaterial({color:0x6699ee,opacity:.8,transparent:true});
+const coastMat=new THREE.LineBasicMaterial({color:0x7aa8dd,opacity:.9,transparent:true,linewidth:2});
 let coastObjs=[];
 
 function drawCoast(){
@@ -88,7 +88,7 @@ function drawCoast(){
     const pts=[];
     for(let i=0;i<poly.length-1;i++){
       const [lo1,la1]=poly[i],[lo2,la2]=poly[i+1];
-      const n=Math.max(2,Math.ceil(Math.hypot(lo2-lo1,la2-la1)/3));
+      const n=Math.max(2,Math.ceil(Math.hypot(lo2-lo1,la2-la1)/2.5));
       for(let j=0;j<=n;j++){
         const t=j/n;
         pts.push(ll2v(la1+(la2-la1)*t,lo1+(lo2-lo1)*t,1.002));
@@ -99,28 +99,6 @@ function drawCoast(){
     globeG.add(l);coastObjs.push(l);
   });
 }
-
-function makeLandTexture(){
-  const c=document.createElement('canvas');
-  c.width=c.height=512;
-  const ctx=c.getContext('2d');
-  ctx.fillStyle='#0d1f3c';ctx.fillRect(0,0,512,512);
-  ctx.fillStyle='#1a4d2e';
-  COAST.forEach(poly=>{
-    ctx.beginPath();
-    poly.forEach(([lon,lat],i)=>{
-      const x=(lon+180)/360*512;
-      const y=(lat+90)/180*512;
-      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    });
-    ctx.closePath();
-    ctx.fill();
-  });
-  return new THREE.CanvasTexture(c);
-}
-
-const landTex=makeLandTexture();
-globeG.add(new THREE.Mesh(new THREE.SphereGeometry(1.0008,64,64),new THREE.MeshBasicMaterial({map:landTex,opacity:.5,transparent:true})));
 
 drawCoast();
 
@@ -184,11 +162,16 @@ function draw(){
   document.getElementById('stat').textContent=fs.length+' trechos';
   const aps=new Set(fs.flatMap(f=>[f.o,f.d]));
   const dg=new THREE.SphereGeometry(.014,8,8);
+  const routes=new Map();
   fs.forEach(f=>{
     if(!AP[f.o]||!AP[f.d])return;
+    const key=f.o<f.d?f.o+f.d:f.d+f.o;
+    if(!routes.has(key))routes.set(key,f);
+  });
+  routes.forEach(f=>{
     const [lo1,la1]=AP[f.o],[lo2,la2]=AP[f.d];
     const g=new THREE.BufferGeometry().setFromPoints(gcV(lo1,la1,lo2,la2));
-    const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(TC[f.t]||TC.default),opacity:1,transparent:true,depthTest:true,depthWrite:false,linewidth:4}));
+    const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(TC[f.t]||TC.default),opacity:.85,transparent:true,depthTest:true,depthWrite:false,linewidth:3}));
     globeG.add(l);gLines.push(l);
   });
   aps.forEach(code=>{
