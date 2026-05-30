@@ -21,13 +21,13 @@
 // Se a imagem aparecer deslocada ou com bordas, teste comentar/trocar:
 // #define CGRAM_OFFSET
 
-// ---- pinos (ESP32-C3 Super Mini) ----
-#define TFT_MOSI 4    // SDA do display (era 6 - TESTANDO!)
-#define TFT_SCLK 6    // SCL do display (era 4 - TESTANDO!)
-#define TFT_CS    5   // CS
-#define TFT_DC    7   // DC
-#define TFT_RST  10   // RST
-#define TFT_BL    1   // BL (backlight)
+// ---- pinos (ESP32-C3 Super Mini) - REAL ----
+#define TFT_MOSI 3    // SDA do display (VIOLETA)
+#define TFT_SCLK 4    // SCL do display (CINZA)
+#define TFT_CS    2   // CS (AZUL)
+#define TFT_DC    0   // DC (AMARELO)
+#define TFT_RST  21   // RST (LARANJA)
+#define TFT_BL    1   // BL - backlight (VERDE)
 #define TFT_BACKLIGHT_ON HIGH
 
 // ---- fontes ----
