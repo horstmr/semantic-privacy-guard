@@ -89,11 +89,6 @@ globeG.add(new THREE.Mesh(
   new THREE.SphereGeometry(1,64,64),
   new THREE.MeshPhongMaterial({color:0x0d1f3c,emissive:0x081828,shininess:25,specular:0x223366})
 ));
-// Faint graticule
-globeG.add(new THREE.Mesh(
-  new THREE.SphereGeometry(1.001,36,24),
-  new THREE.MeshBasicMaterial({color:0x16304f,wireframe:true,opacity:.08,transparent:true})
-));
 
 function ll2v(lat,lon,r=1){
   const phi=(90-lat)*Math.PI/180,th=(lon+180)*Math.PI/180;
@@ -104,7 +99,32 @@ function ll2v(lat,lon,r=1){
 // (works when opened locally / online); falls back to embedded COAST offline.
 const coastMat=new THREE.LineBasicMaterial({color:0x5588dd,opacity:.75,transparent:true,linewidth:1.5});
 const landMat=new THREE.LineBasicMaterial({color:0x5588dd,opacity:.7,transparent:true,linewidth:1.2});
+const landFillMat=new THREE.MeshBasicMaterial({color:0x1a4d2e,opacity:.35,transparent:true,side:THREE.FrontSide});
 let coastObjs=[];
+
+function drawLandFill(){
+  COAST.forEach(poly=>{
+    try{
+      const pts2d=poly.map(([lon,lat])=>{
+        const u=(lon+180)/360, v=(lat+90)/180;
+        return new THREE.Vector2(u,v);
+      });
+      const shape=new THREE.Shape(pts2d);
+      const geo=new THREE.ShapeGeometry(shape,16);
+      const mat=new THREE.MeshBasicMaterial({color:0x1a4d2e,side:THREE.DoubleSide});
+      const m=new THREE.Mesh(geo,mat);
+      m.position.z=0;
+      m.scale.set(1,1,1);
+    }catch(e){}
+  });
+  // Simple overlay: add a canvas texture with land painted
+  const c=document.createElement('canvas');c.width=c.height=512;
+  const ctx=c.getContext('2d');ctx.fillStyle='#0d1f3c';ctx.fillRect(0,0,512,512);
+  ctx.fillStyle='#1a4d2e';
+  COAST.forEach(poly=>{ctx.beginPath();poly.forEach(([lon,lat],i)=>{const x=(lon+180)/360*512,y=(lat+90)/180*512;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.closePath();ctx.fill();});
+  const tex=new THREE.CanvasTexture(c);tex.magFilter=THREE.LinearFilter;
+  globeG.add(new THREE.Mesh(new THREE.SphereGeometry(1.0005,64,64),new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:.4})));
+}
 
 function drawEmbeddedCoast(){
   COAST.forEach(poly=>{
@@ -151,6 +171,7 @@ function buildFromTopo(topo){
 }
 
 // Try CDN detailed map; fallback to embedded
+drawLandFill();
 const CDN_MAP='https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
 fetch(CDN_MAP).then(r=>{if(!r.ok)throw 0;return r.json();}).then(topo=>{
   buildFromTopo(topo);
