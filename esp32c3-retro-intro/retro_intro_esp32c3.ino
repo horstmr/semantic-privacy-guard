@@ -4,9 +4,9 @@
   ============================================================
    Placa:    ESP32-C3 Super Mini
    Display:  GMT020-02-8P  (ST7789, 240x320)  via SPI
-   Lib:      TFT_eSPI  (configure o User_Setup.h com seus pinos)
+   Setup:    User_Setup.h local na pasta do projeto
 
-   Pinos sugeridos (devem bater com o User_Setup.h):
+   Pinos (devem bater com o User_Setup.h na sua pasta):
      SCL->GPIO4  SDA->GPIO6  CS->GPIO7  DC->GPIO5
      RST->GPIO10 BL->GPIO1   VCC->3V3   GND->GND
 
@@ -15,6 +15,8 @@
   ============================================================
 */
 
+#include "User_Setup.h"           // carrega do folder do sketch
+#define USER_SETUP_LOADED         // evita dupla inclusão
 #include <TFT_eSPI.h>
 #include <math.h>
 

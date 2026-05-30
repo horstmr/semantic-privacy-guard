@@ -5,10 +5,12 @@
    Placa:    ESP32-C3 Super Mini
    Display:  GMT020-02-8P  (ST7789, 240x320)  via SPI
    WiFi:     modo AP (hotspot)  -  acesse 192.168.4.1
-   Lib:      TFT_eSPI + WebServer nativa
+   Setup:    User_Setup.h local na pasta do projeto
   ============================================================
 */
 
+#include "User_Setup.h"           // carrega do folder do sketch
+#define USER_SETUP_LOADED         // evita dupla inclusão
 #include <TFT_eSPI.h>
 #include <WiFi.h>
 #include <WebServer.h>
