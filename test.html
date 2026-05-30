@@ -59,6 +59,9 @@ function ll2v(lat,lon,r=1){
 
 // Desenhar continentes
 function drawLands(){
+  const landsMat=new THREE.MeshBasicMaterial({color:0x15803d,side:THREE.DoubleSide});
+  const coastMat=new THREE.LineBasicMaterial({color:0x22c55e});
+
   COAST.forEach(poly=>{
     const pts=[];
 
@@ -73,13 +76,13 @@ function drawLands(){
       }
     }
 
-    // Desenhar como cilindros (tubos)
+    // Desenhar linhas de costa
     for(let i=0;i<pts.length-1;i++){
       const p1=pts[i],p2=pts[i+1];
       const mid=new THREE.Vector3().addVectors(p1,p2).multiplyScalar(0.5);
       const len=p1.distanceTo(p2);
       const tube=new THREE.CylinderGeometry(0.004,0.004,len,6);
-      const mesh=new THREE.Mesh(tube,new THREE.MeshBasicMaterial({color:0x22c55e}));
+      const mesh=new THREE.Mesh(tube,coastMat);
       mesh.position.copy(mid);
       mesh.lookAt(p2);
       mesh.rotateX(Math.PI/2);
@@ -90,6 +93,43 @@ function drawLands(){
 
 drawLands();
 
+// Carregar TopoJSON para preencher continentes
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  .then(r=>r.json())
+  .then(topo=>{
+    const tf=topo.transform,arcs=topo.arcs;
+    function decode(i){
+      const raw=i<0?[...arcs[~i]].reverse():arcs[i];
+      let x=0,y=0;const out=[];
+      for(const d of raw){x+=d[0];y+=d[1];out.push([x*tf.scale[0]+tf.translate[0],y*tf.scale[1]+tf.translate[1]]);}
+      return out;
+    }
+    function addRing(ringArcs){
+      const lonlat=[];
+      for(const ai of ringArcs){const seg=decode(ai);for(const p of seg)lonlat.push(p);}
+      const pts=[];
+      for(let i=0;i<lonlat.length-1;i++){
+        const [lo1,la1]=lonlat[i],[lo2,la2]=lonlat[i+1];
+        const n=Math.max(2,Math.ceil(Math.hypot(lo2-lo1,la2-la1)/3));
+        for(let j=0;j<=n;j++){const t=j/n;pts.push(ll2v(la1+(la2-la1)*t,lo1+(lo2-lo1)*t,1.001));}
+      }
+      if(pts.length>2){
+        const shape=new THREE.Shape();
+        pts.forEach((p,i)=>{
+          const screen=new THREE.Vector3().copy(p);
+          if(i===0)shape.moveTo(screen.x,screen.y);
+          else shape.lineTo(screen.x,screen.y);
+        });
+      }
+    }
+    const obj=topo.objects.countries;
+    const geoms=obj.type==='GeometryCollection'?obj.geometries:[obj];
+    for(const gm of geoms){
+      if(gm.type==='Polygon')for(const ring of gm.arcs)addRing(ring);
+      else if(gm.type==='MultiPolygon')for(const poly of gm.arcs)for(const ring of poly)addRing(ring);
+    }
+  }).catch(()=>{});
+
 // Iluminação
 scene.add(new THREE.AmbientLight(0xffffff,0.9));
 const directional=new THREE.DirectionalLight(0xffffff,0.6);
@@ -98,21 +138,26 @@ scene.add(directional);
 
 // Interação - rotação manual
 let rotX=0, rotY=0;
-let isDrag=false, lastX, lastY;
+let isDrag=false, lastX=0, lastY=0;
 
 canvas.addEventListener('mousedown',(e)=>{
   isDrag=true;
   lastX=e.clientX;
   lastY=e.clientY;
+  e.preventDefault();
 });
 
-window.addEventListener('mouseup',()=>{isDrag=false});
+document.addEventListener('mouseup',()=>{
+  isDrag=false;
+});
 
-window.addEventListener('mousemove',(e)=>{
+document.addEventListener('mousemove',(e)=>{
   if(!isDrag)return;
-  rotY+=(e.clientX-lastX)*0.005;
-  rotX+=(e.clientY-lastY)*0.005;
-  rotX=Math.max(-Math.PI/2,Math.min(Math.PI/2,rotX));
+  const dX=e.clientX-lastX;
+  const dY=e.clientY-lastY;
+  rotY+=dX*0.007;
+  rotX+=dY*0.007;
+  rotX=Math.max(-Math.PI/2.2,Math.min(Math.PI/2.2,rotX));
   lastX=e.clientX;
   lastY=e.clientY;
 });
