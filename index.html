@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Globo de Voos (local) · Martin R. Horst 2007–2026</title>
+<title>Globo de Voos · Martin R. Horst 2007–2026</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#06090f;font-family:'Segoe UI',system-ui,sans-serif;color:#c8d8f0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
@@ -45,36 +45,25 @@ canvas#gc:active{cursor:grabbing}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ── AIRPORTS [lon,lat] ──────────────────────────────────────────────────────
 const AP={GRU:[-46.47,-23.44],CGH:[-46.66,-23.63],GIG:[-43.25,-22.81],SDU:[-43.16,-22.91],VCP:[-47.13,-23.01],CWB:[-49.18,-25.53],JOI:[-48.80,-26.22],FLN:[-48.55,-27.67],NVT:[-48.65,-26.88],POA:[-51.17,-29.99],FOR:[-38.53,-3.78],NAT:[-35.25,-5.91],REC:[-34.92,-8.13],SSA:[-38.32,-12.91],BEL:[-48.48,-1.38],BSB:[-47.92,-15.87],GYN:[-49.22,-16.63],AJU:[-37.07,-10.98],MCZ:[-35.79,-9.51],SLZ:[-44.23,-2.59],XAP:[-52.66,-27.17],OPO:[-8.68,41.25],LIS:[-9.14,38.78],MAD:[-3.57,40.49],BCN:[2.08,41.30],TXL:[13.29,52.56],SXF:[13.52,52.38],MUC:[11.78,48.35],FRA:[8.56,50.04],CDG:[2.55,49.01],LGW:[-0.18,51.15],STN:[0.24,51.89],LHR:[-0.46,51.48],AMS:[4.76,52.31],DUB:[-6.27,53.42],EDI:[-3.37,55.95],PRG:[14.26,50.10],VIE:[16.57,48.11],ZRH:[8.55,47.46],GVA:[6.11,46.24],FCO:[12.24,41.80],BGY:[9.70,45.67],MXP:[8.72,45.63],NRN:[6.14,51.60],BLL:[9.15,55.74],CPH:[12.65,55.62],ARN:[17.92,59.65],HEL:[24.96,60.32],WAW:[20.97,52.17],BUD:[19.26,47.43],KTW:[19.08,50.47],DOH:[51.61,25.27],BKK:[100.75,13.68],DMK:[100.61,13.91],KUL:[101.71,2.75],SIN:[103.99,1.36],CGK:[106.65,-6.13],DPS:[115.17,-8.75],LBJ:[119.89,-8.49],HAN:[105.81,21.22],SGN:[106.65,10.82],REP:[103.81,13.41],NRT:[140.39,35.77],ICN:[126.44,37.46],PTY:[-79.38,9.07],GUA:[-90.53,14.58],HAV:[-82.41,22.99],CTG:[-75.51,10.44],BOG:[-74.15,4.70],MDE:[-75.42,6.16],CLO:[-76.38,3.54],UIO:[-78.36,-0.13],GYE:[-79.88,-2.16],GPS:[-90.27,-0.45],SCY:[-89.62,-0.90],LIM:[-77.11,-12.02],EZE:[-58.54,-34.82],AEP:[-58.42,-34.56],VVI:[-63.14,-17.64],CNF:[-43.97,-19.62],IGU:[-54.49,-25.60],AXM:[-75.77,4.45],ARM:[-75.77,4.45],BVA:[2.11,49.45],GRO:[2.76,41.90],VCE:[12.35,45.51],IST:[28.75,41.28],RAK:[-8.04,31.61],CNX:[98.96,18.77],RGN:[96.13,16.91],LPQ:[102.16,19.90],HUI:[107.70,16.40],KBV:[98.99,8.10],MYY:[113.99,4.32],BWN:[114.93,4.94],BKI:[116.05,5.94],MNL:[121.02,14.51],NYO:[16.91,58.79],HHN:[7.27,49.95],BXU:[125.48,8.95],MCO:[-81.31,28.43],BGO:[5.22,60.29],OSL:[11.00,60.20],CTU:[103.95,30.58],PEK:[116.58,40.08]};
 
 const FL=[{"o":"FLN","d":"GRU","y":2007,"t":"Doméstico"},{"o":"GRU","d":"VVI","y":2007,"t":"Internacional"},{"o":"VVI","d":"GRU","y":2008,"t":"Internacional"},{"o":"GRU","d":"FLN","y":2008,"t":"Doméstico"},{"o":"JOI","d":"CGH","y":2008,"t":"Doméstico"},{"o":"CGH","d":"CNF","y":2008,"t":"Doméstico"},{"o":"CNF","d":"CGH","y":2008,"t":"Doméstico"},{"o":"CGH","d":"JOI","y":2008,"t":"Doméstico"},{"o":"CWB","d":"POA","y":2008,"t":"Doméstico"},{"o":"POA","d":"CWB","y":2008,"t":"Doméstico"},{"o":"FLN","d":"GRU","y":2008,"t":"Doméstico"},{"o":"GRU","d":"OPO","y":2008,"t":"Transatlântico"},{"o":"OPO","d":"BGY","y":2008,"t":"Europeu"},{"o":"BGY","d":"SXF","y":2008,"t":"Europeu"},{"o":"PRG","d":"AMS","y":2008,"t":"Europeu"},{"o":"BVA","d":"OPO","y":2009,"t":"Europeu"},{"o":"OPO","d":"GRO","y":2009,"t":"Europeu"},{"o":"GRO","d":"OPO","y":2009,"t":"Europeu"},{"o":"OPO","d":"STN","y":2009,"t":"Europeu"},{"o":"STN","d":"OPO","y":2009,"t":"Europeu"},{"o":"OPO","d":"DUB","y":2009,"t":"Europeu"},{"o":"DUB","d":"OPO","y":2009,"t":"Europeu"},{"o":"OPO","d":"MAD","y":2009,"t":"Europeu"},{"o":"MAD","d":"GRU","y":2009,"t":"Transatlântico"},{"o":"GRU","d":"FLN","y":2009,"t":"Doméstico"},{"o":"SSA","d":"FRA","y":2009,"t":"Transatlântico"},{"o":"FRA","d":"TXL","y":2009,"t":"Europeu"},{"o":"OPO","d":"GRO","y":2009,"t":"Europeu"},{"o":"GRO","d":"OPO","y":2009,"t":"Europeu"},{"o":"SXF","d":"NRN","y":2009,"t":"Europeu"},{"o":"NRN","d":"SXF","y":2009,"t":"Europeu"},{"o":"SXF","d":"EDI","y":2009,"t":"Europeu"},{"o":"EDI","d":"SXF","y":2009,"t":"Europeu"},{"o":"SXF","d":"NYO","y":2009,"t":"Europeu"},{"o":"LGW","d":"SXF","y":2010,"t":"Europeu"},{"o":"TXL","d":"CDG","y":2010,"t":"Europeu"},{"o":"CDG","d":"GRU","y":2010,"t":"Transatlântico"},{"o":"GRU","d":"CWB","y":2010,"t":"Doméstico"},{"o":"SXF","d":"BGY","y":2010,"t":"Europeu"},{"o":"HHN","d":"OPO","y":2010,"t":"Europeu"},{"o":"OPO","d":"HHN","y":2010,"t":"Europeu"},{"o":"SXF","d":"NRN","y":2010,"t":"Europeu"},{"o":"NRN","d":"OPO","y":2010,"t":"Europeu"},{"o":"OPO","d":"HHN","y":2010,"t":"Europeu"},{"o":"HHN","d":"SXF","y":2010,"t":"Europeu"},{"o":"CWB","d":"GRU","y":2011,"t":"Doméstico"},{"o":"GRU","d":"CDG","y":2011,"t":"Transatlântico"},{"o":"CDG","d":"TXL","y":2011,"t":"Europeu"},{"o":"STN","d":"SXF","y":2011,"t":"Europeu"},{"o":"SXF","d":"FCO","y":2011,"t":"Europeu"},{"o":"FCO","d":"SXF","y":2011,"t":"Europeu"},{"o":"SXF","d":"AMS","y":2011,"t":"Europeu"},{"o":"AMS","d":"SXF","y":2011,"t":"Europeu"},{"o":"SXF","d":"GRU","y":2011,"t":"Transatlântico"},{"o":"GRU","d":"TXL","y":2012,"t":"Transatlântico"},{"o":"SXF","d":"AMS","y":2012,"t":"Europeu"},{"o":"AMS","d":"SXF","y":2012,"t":"Europeu"},{"o":"SXF","d":"VCE","y":2012,"t":"Europeu"},{"o":"FCO","d":"SXF","y":2012,"t":"Europeu"},{"o":"SXF","d":"GVA","y":2012,"t":"Europeu"},{"o":"TXL","d":"ZRH","y":2012,"t":"Europeu"},{"o":"ZRH","d":"TXL","y":2012,"t":"Europeu"},{"o":"SXF","d":"BUD","y":2012,"t":"Europeu"},{"o":"BUD","d":"SXF","y":2012,"t":"Europeu"},{"o":"TXL","d":"MUC","y":2012,"t":"Europeu"},{"o":"MUC","d":"GRU","y":2012,"t":"Transatlântico"},{"o":"GIG","d":"GRU","y":2013,"t":"Doméstico"},{"o":"GRU","d":"FRA","y":2013,"t":"Transatlântico"},{"o":"FRA","d":"TXL","y":2013,"t":"Europeu"},{"o":"CWB","d":"BEL","y":2013,"t":"Doméstico"},{"o":"BEL","d":"FOR","y":2013,"t":"Doméstico"},{"o":"FOR","d":"NAT","y":2013,"t":"Doméstico"},{"o":"NAT","d":"GRU","y":2013,"t":"Doméstico"},{"o":"GRU","d":"CWB","y":2013,"t":"Doméstico"},{"o":"CWB","d":"CNF","y":2013,"t":"Doméstico"},{"o":"SDU","d":"GRU","y":2013,"t":"Doméstico"},{"o":"GRU","d":"NVT","y":2013,"t":"Doméstico"},{"o":"CWB","d":"GIG","y":2013,"t":"Doméstico"},{"o":"GIG","d":"AMS","y":2013,"t":"Transatlântico"},{"o":"AMS","d":"TXL","y":2013,"t":"Europeu"},{"o":"TXL","d":"CDG","y":2013,"t":"Europeu"},{"o":"CDG","d":"GIG","y":2013,"t":"Transatlântico"},{"o":"GIG","d":"CWB","y":2013,"t":"Doméstico"},{"o":"GIG","d":"CDG","y":2014,"t":"Transatlântico"},{"o":"CDG","d":"TXL","y":2014,"t":"Europeu"},{"o":"TXL","d":"AMS","y":2014,"t":"Europeu"},{"o":"AMS","d":"GIG","y":2014,"t":"Transatlântico"},{"o":"GIG","d":"NAT","y":2014,"t":"Doméstico"},{"o":"NAT","d":"GIG","y":2014,"t":"Doméstico"},{"o":"CWB","d":"BSB","y":2014,"t":"Doméstico"},{"o":"BSB","d":"GIG","y":2014,"t":"Doméstico"},{"o":"GIG","d":"CWB","y":2014,"t":"Doméstico"},{"o":"CWB","d":"GIG","y":2014,"t":"Doméstico"},{"o":"SDU","d":"CGH","y":2014,"t":"Doméstico"},{"o":"CGH","d":"JOI","y":2014,"t":"Doméstico"},{"o":"JOI","d":"CGH","y":2014,"t":"Doméstico"},{"o":"CGH","d":"SDU","y":2014,"t":"Doméstico"},{"o":"JOI","d":"CGH","y":2014,"t":"Doméstico"},{"o":"CGH","d":"BSB","y":2014,"t":"Doméstico"},{"o":"BSB","d":"CGH","y":2014,"t":"Doméstico"},{"o":"CGH","d":"JOI","y":2014,"t":"Doméstico"},{"o":"SDU","d":"CGH","y":2015,"t":"Doméstico"},{"o":"TXL","d":"CDG","y":2015,"t":"Europeu"},{"o":"CDG","d":"GIG","y":2015,"t":"Transatlântico"},{"o":"GIG","d":"CWB","y":2015,"t":"Doméstico"},{"o":"CGH","d":"JOI","y":2015,"t":"Doméstico"},{"o":"GIG","d":"AMS","y":2014,"t":"Transatlântico"},{"o":"AMS","d":"TXL","y":2014,"t":"Europeu"},{"o":"CWB","d":"MCO","y":2015,"t":"Internacional"},{"o":"MCO","d":"OSL","y":2015,"t":"Transatlântico"},{"o":"OSL","d":"SXF","y":2015,"t":"Europeu"},{"o":"SXF","d":"RAK","y":2015,"t":"Europeu"},{"o":"RAK","d":"SXF","y":2015,"t":"Europeu"},{"o":"TXL","d":"MAD","y":2015,"t":"Europeu"},{"o":"MAD","d":"GIG","y":2015,"t":"Transatlântico"},{"o":"CWB","d":"GRU","y":2015,"t":"Doméstico"},{"o":"GRU","d":"EZE","y":2015,"t":"Internacional"},{"o":"EZE","d":"CWB","y":2015,"t":"Internacional"},{"o":"CWB","d":"VCP","y":2016,"t":"Doméstico"},{"o":"VCP","d":"SDU","y":2016,"t":"Doméstico"},{"o":"SDU","d":"CNF","y":2016,"t":"Doméstico"},{"o":"CNF","d":"CGH","y":2016,"t":"Doméstico"},{"o":"CGH","d":"CWB","y":2016,"t":"Doméstico"},{"o":"JOI","d":"CGH","y":2016,"t":"Doméstico"},{"o":"CGH","d":"CNF","y":2016,"t":"Doméstico"},{"o":"CNF","d":"CGH","y":2016,"t":"Doméstico"},{"o":"CGH","d":"JOI","y":2016,"t":"Doméstico"},{"o":"CWB","d":"CGH","y":2016,"t":"Doméstico"},{"o":"CGH","d":"CWB","y":2016,"t":"Doméstico"},{"o":"CWB","d":"GRU","y":2017,"t":"Doméstico"},{"o":"SLZ","d":"BEL","y":2017,"t":"Doméstico"},{"o":"BEL","d":"GRU","y":2017,"t":"Doméstico"},{"o":"GRU","d":"FOR","y":2017,"t":"Doméstico"},{"o":"CWB","d":"GRU","y":2017,"t":"Doméstico"},{"o":"GRU","d":"DOH","y":2017,"t":"Intercontinental"},{"o":"DOH","d":"BKK","y":2017,"t":"Regional/Ásia"},{"o":"BKK","d":"CNX","y":2017,"t":"Regional/Ásia"},{"o":"CNX","d":"BKK","y":2017,"t":"Regional/Ásia"},{"o":"BKK","d":"RGN","y":2017,"t":"Regional/Ásia"},{"o":"RGN","d":"BKK","y":2017,"t":"Regional/Ásia"},{"o":"LPQ","d":"HAN","y":2017,"t":"Regional/Ásia"},{"o":"HUI","d":"SGN","y":2017,"t":"Regional/Ásia"},{"o":"DMK","d":"KBV","y":2017,"t":"Regional/Ásia"},{"o":"DPS","d":"LBJ","y":2017,"t":"Regional/Ásia"},{"o":"LBJ","d":"DPS","y":2017,"t":"Regional/Ásia"},{"o":"DPS","d":"SIN","y":2017,"t":"Regional/Ásia"},{"o":"SIN","d":"MYY","y":2017,"t":"Regional/Ásia"},{"o":"BWN","d":"BKI","y":2017,"t":"Regional/Ásia"},{"o":"BKI","d":"MNL","y":2017,"t":"Regional/Ásia"},{"o":"MNL","d":"BKK","y":2017,"t":"Regional/Ásia"},{"o":"BKK","d":"DOH","y":2017,"t":"Intercontinental"},{"o":"DOH","d":"GRU","y":2017,"t":"Intercontinental"},{"o":"GRU","d":"CWB","y":2017,"t":"Doméstico"},{"o":"CWB","d":"GRU","y":2017,"t":"Doméstico"},{"o":"GRU","d":"CNF","y":2017,"t":"Doméstico"},{"o":"CNF","d":"GRU","y":2017,"t":"Doméstico"},{"o":"GRU","d":"CWB","y":2017,"t":"Doméstico"},{"o":"CWB","d":"CGH","y":2018,"t":"Doméstico"},{"o":"CGH","d":"SDU","y":2018,"t":"Doméstico"},{"o":"SDU","d":"CGH","y":2018,"t":"Doméstico"},{"o":"CGH","d":"CWB","y":2018,"t":"Doméstico"},{"o":"CWB","d":"POA","y":2018,"t":"Doméstico"},{"o":"POA","d":"PTY","y":2018,"t":"Intercontinental"},{"o":"PTY","d":"GUA","y":2018,"t":"América Central"},{"o":"PTY","d":"GRU","y":2018,"t":"Intercontinental"},{"o":"GRU","d":"CWB","y":2018,"t":"Doméstico"},{"o":"VCP","d":"JOI","y":2019,"t":"Doméstico"},{"o":"CWB","d":"GRU","y":2020,"t":"Doméstico"},{"o":"GRU","d":"REC","y":2020,"t":"Doméstico"},{"o":"REC","d":"GRU","y":2020,"t":"Doméstico"},{"o":"GRU","d":"CWB","y":2020,"t":"Doméstico"},{"o":"NVT","d":"GRU","y":2021,"t":"Doméstico"},{"o":"GRU","d":"BEL","y":2021,"t":"Doméstico"},{"o":"BEL","d":"GRU","y":2021,"t":"Doméstico"},{"o":"GRU","d":"NVT","y":2021,"t":"Doméstico"},{"o":"CWB","d":"CNF","y":2022,"t":"Doméstico"},{"o":"CNF","d":"GYN","y":2022,"t":"Doméstico"},{"o":"GYN","d":"VCP","y":2022,"t":"Doméstico"},{"o":"VCP","d":"CWB","y":2022,"t":"Doméstico"},{"o":"CWB","d":"GRU","y":2023,"t":"Doméstico"},{"o":"GRU","d":"BOG","y":2023,"t":"Intercontinental"},{"o":"BOG","d":"CTG","y":2023,"t":"América do Sul"},{"o":"CTG","d":"MDE","y":2023,"t":"América do Sul"},{"o":"MDE","d":"BOG","y":2023,"t":"América do Sul"},{"o":"AXM","d":"BOG","y":2023,"t":"América do Sul"},{"o":"BOG","d":"UIO","y":2023,"t":"América do Sul"},{"o":"GYE","d":"GPS","y":2023,"t":"América do Sul"},{"o":"SCY","d":"GYE","y":2023,"t":"América do Sul"},{"o":"GYE","d":"LIM","y":2023,"t":"América do Sul"},{"o":"LIM","d":"GRU","y":2023,"t":"Intercontinental"},{"o":"GRU","d":"CWB","y":2023,"t":"Doméstico"},{"o":"XAP","d":"CGH","y":2024,"t":"Doméstico"},{"o":"GRU","d":"XAP","y":2024,"t":"Doméstico"},{"o":"JOI","d":"VCP","y":2025,"t":"Doméstico"},{"o":"VCP","d":"NAT","y":2025,"t":"Doméstico"},{"o":"NAT","d":"CNF","y":2025,"t":"Doméstico"},{"o":"VCP","d":"JOI","y":2025,"t":"Doméstico"},{"o":"CNF","d":"VCP","y":2025,"t":"Doméstico"},{"o":"CWB","d":"GIG","y":2025,"t":"Doméstico"},{"o":"GIG","d":"AJU","y":2025,"t":"Doméstico"},{"o":"MCZ","d":"CGH","y":2025,"t":"Doméstico"},{"o":"CGH","d":"CWB","y":2025,"t":"Doméstico"},{"o":"CWB","d":"GIG","y":2026,"t":"Doméstico"},{"o":"GIG","d":"CWB","y":2026,"t":"Doméstico"},{"o":"OPO","d":"GRO","y":2009,"t":"Europeu"},{"o":"GRO","d":"OPO","y":2009,"t":"Europeu"},{"o":"SXF","d":"NRN","y":2009,"t":"Europeu"},{"o":"NRN","d":"SXF","y":2009,"t":"Europeu"},{"o":"SXF","d":"EDI","y":2009,"t":"Europeu"},{"o":"EDI","d":"SXF","y":2009,"t":"Europeu"},{"o":"SXF","d":"NYO","y":2009,"t":"Europeu"},{"o":"SXF","d":"BGY","y":2010,"t":"Europeu"},{"o":"HHN","d":"OPO","y":2010,"t":"Europeu"},{"o":"OPO","d":"HHN","y":2010,"t":"Europeu"},{"o":"SXF","d":"NRN","y":2010,"t":"Europeu"},{"o":"NRN","d":"OPO","y":2010,"t":"Europeu"},{"o":"OPO","d":"HHN","y":2010,"t":"Europeu"},{"o":"HHN","d":"SXF","y":2010,"t":"Europeu"},{"o":"SXF","d":"BUD","y":2012,"t":"Europeu"},{"o":"BUD","d":"SXF","y":2012,"t":"Europeu"},{"o":"RAK","d":"SXF","y":2015,"t":"Europeu"},{"o":"MNL","d":"BXU","y":2017,"t":"Regional/Ásia"},{"o":"BXU","d":"MNL","y":2017,"t":"Regional/Ásia"}];
 
 const TC={'Transatlântico':'#3d7fff','Intercontinental':'#aa55ff','Europeu':'#1fd4a0','Doméstico':'#ffaa33','Sul-americano':'#ff4466','Regional/Ásia':'#33ffcc','América Central':'#ffee33','América do Sul':'#ff7733','Internacional':'#cc88ff','default':'#6688dd'};
 
-// ── COASTLINES (simplified, [lon,lat] polylines) ────────────────────────────
 const COAST=[
-// South America
 [[-81,-4],[-80,-6],[-79,-8],[-77,-12],[-76,-14],[-74,-18],[-71,-18],[-70,-23],[-71,-30],[-73,-37],[-74,-42],[-74,-46],[-75,-50],[-74,-53],[-69,-55],[-66,-55],[-65,-48],[-62,-41],[-58,-38],[-57,-35],[-58,-34],[-56,-34],[-53,-34],[-51,-31],[-48,-28],[-48,-25],[-46,-24],[-44,-23],[-42,-23],[-40,-21],[-39,-18],[-39,-15],[-37,-12],[-35,-9],[-35,-5],[-38,-4],[-41,-3],[-44,-2],[-48,-1],[-50,0],[-51,4],[-50,5],[-52,5],[-54,6],[-58,7],[-60,9],[-62,10],[-64,10],[-66,11],[-70,12],[-72,12],[-72,9],[-75,9],[-77,8],[-78,6],[-78,2],[-80,0],[-81,-2],[-81,-4]],
-// Central America + Mexico
 [[-83,8],[-83,11],[-84,11],[-86,12],[-88,16],[-87,21],[-90,21],[-91,19],[-95,18],[-97,16],[-100,17],[-104,19],[-106,23],[-110,24],[-112,26],[-110,30],[-114,30],[-115,28],[-114,23],[-110,22],[-106,21],[-105,20],[-103,18],[-100,16]],
-// North America
 [[-114,30],[-117,33],[-120,34],[-122,37],[-124,40],[-124,46],[-123,48],[-125,50],[-130,54],[-133,57],[-138,59],[-148,60],[-153,59],[-158,57],[-162,55],[-165,60],[-164,63],[-161,64],[-166,66],[-162,70],[-156,71],[-148,70],[-141,70],[-130,70],[-125,70],[-115,68],[-105,68],[-95,68],[-85,68],[-80,73],[-78,73],[-75,68],[-68,63],[-64,60],[-60,56],[-56,53],[-56,50],[-60,47],[-64,46],[-67,45],[-70,42],[-74,40],[-76,37],[-76,35],[-81,31],[-81,25],[-83,25],[-85,30],[-89,30],[-94,29],[-97,28],[-97,26],[-99,26]],
-// Greenland
 [[-45,60],[-43,60],[-40,64],[-38,66],[-33,68],[-25,70],[-22,70],[-20,73],[-22,76],[-31,78],[-45,82],[-58,82],[-65,80],[-58,76],[-53,69],[-50,64],[-48,60],[-45,60]],
-// Europe + Africa + Asia (big landmass)
 [[-10,36],[-9,38],[-9,43],[-2,44],[-1,46],[-4,48],[-5,49],[-1,50],[2,51],[4,52],[7,53],[8,57],[10,57],[10,54],[13,54],[14,54],[19,55],[21,56],[24,57],[28,60],[30,60],[29,62],[25,65],[21,65],[22,70],[26,71],[31,70],[38,68],[45,68],[55,68],[68,68],[75,73],[80,73],[100,77],[105,78],[113,74],[114,73],[127,73],[140,73],[160,70],[170,69],[180,68],[180,65],[170,60],[162,60],[155,57],[156,52],[160,53],[163,57],[170,60],[163,52],[158,52],[156,50],[154,48],[150,45],[145,44],[143,49],[140,52],[135,55],[130,52],[130,48],[128,43],[126,40],[122,40],[121,38],[122,37],[120,35],[122,32],[121,30],[119,26],[117,24],[115,23],[113,22],[110,21],[108,16],[109,11],[105,9],[103,1],[104,1],[100,7],[98,8],[98,11],[99,14],[98,16],[97,16],[94,16],[91,22],[88,22],[87,21],[81,16],[80,13],[77,8],[76,9],[75,15],[73,16],[73,21],[70,21],[67,24],[62,25],[57,25],[56,27],[54,26],[51,30],[48,30],[49,27],[50,24],[47,17],[43,13],[44,12],[51,12],[51,11],[48,8],[43,4],[41,-2],[40,-7],[40,-11],[40,-16],[35,-20],[35,-23],[33,-26],[32,-29],[28,-33],[25,-34],[20,-35],[18,-34],[17,-29],[15,-26],[13,-23],[12,-17],[13,-12],[13,-8],[9,-2],[9,3],[5,5],[0,5],[-5,5],[-8,5],[-12,8],[-16,12],[-17,15],[-16,20],[-13,25],[-10,29],[-10,36]],
-// UK
 [[-5,50],[-3,51],[0,51],[1,53],[-1,54],[-3,55],[-5,57],[-6,58],[-8,57],[-6,55],[-5,54],[-5,52],[-5,50]],
-// Australia
 [[114,-22],[114,-26],[116,-32],[119,-34],[124,-34],[129,-32],[134,-33],[138,-35],[141,-38],[145,-38],[148,-38],[150,-37],[153,-31],[153,-28],[152,-25],[149,-21],[146,-19],[143,-15],[142,-11],[140,-17],[137,-12],[136,-12],[133,-12],[130,-12],[127,-14],[123,-17],[121,-20],[114,-22]],
 ];
 
-// ── STATE ───────────────────────────────────────────────────────────────────
 let year=2017, showAll=false, playTimer=null;
 const gfl=()=>showAll?FL:FL.filter(f=>f.y===year);
 
-// ── THREE.JS ────────────────────────────────────────────────────────────────
 const canvas=document.getElementById('gc');
 const stage=document.getElementById('stage');
 let W=stage.offsetWidth, H=stage.offsetHeight;
@@ -84,49 +73,17 @@ const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(42,W/H,.1,100);camera.position.set(0,0,2.9);
 const globeG=new THREE.Group();scene.add(globeG);
 
-// Ocean sphere
-globeG.add(new THREE.Mesh(
-  new THREE.SphereGeometry(1,64,64),
-  new THREE.MeshPhongMaterial({color:0x0d1f3c,emissive:0x081828,shininess:25,specular:0x223366})
-));
+globeG.add(new THREE.Mesh(new THREE.SphereGeometry(1,64,64),new THREE.MeshPhongMaterial({color:0x0d1f3c,emissive:0x081828,shininess:25,specular:0x223366})));
 
 function ll2v(lat,lon,r=1){
   const phi=(90-lat)*Math.PI/180,th=(lon+180)*Math.PI/180;
   return new THREE.Vector3(-r*Math.sin(phi)*Math.cos(th),r*Math.cos(phi),r*Math.sin(phi)*Math.sin(th));
 }
 
-// Draw coastlines on globe — tries to load detailed countries from CDN
-// (works when opened locally / online); falls back to embedded COAST offline.
-const coastMat=new THREE.LineBasicMaterial({color:0x5588dd,opacity:.75,transparent:true,linewidth:1.5});
-const landMat=new THREE.LineBasicMaterial({color:0x5588dd,opacity:.7,transparent:true,linewidth:1.2});
-const landFillMat=new THREE.MeshBasicMaterial({color:0x1a4d2e,opacity:.35,transparent:true,side:THREE.FrontSide});
+const coastMat=new THREE.LineBasicMaterial({color:0x6699ee,opacity:.8,transparent:true});
 let coastObjs=[];
 
-function drawLandFill(){
-  COAST.forEach(poly=>{
-    try{
-      const pts2d=poly.map(([lon,lat])=>{
-        const u=(lon+180)/360, v=(lat+90)/180;
-        return new THREE.Vector2(u,v);
-      });
-      const shape=new THREE.Shape(pts2d);
-      const geo=new THREE.ShapeGeometry(shape,16);
-      const mat=new THREE.MeshBasicMaterial({color:0x1a4d2e,side:THREE.DoubleSide});
-      const m=new THREE.Mesh(geo,mat);
-      m.position.z=0;
-      m.scale.set(1,1,1);
-    }catch(e){}
-  });
-  // Simple overlay: add a canvas texture with land painted
-  const c=document.createElement('canvas');c.width=c.height=512;
-  const ctx=c.getContext('2d');ctx.fillStyle='#0d1f3c';ctx.fillRect(0,0,512,512);
-  ctx.fillStyle='#1a4d2e';
-  COAST.forEach(poly=>{ctx.beginPath();poly.forEach(([lon,lat],i)=>{const x=(lon+180)/360*512,y=(lat+90)/180*512;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.closePath();ctx.fill();});
-  const tex=new THREE.CanvasTexture(c);tex.magFilter=THREE.LinearFilter;
-  globeG.add(new THREE.Mesh(new THREE.SphereGeometry(1.0005,64,64),new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:.4})));
-}
-
-function drawEmbeddedCoast(){
+function drawCoast(){
   COAST.forEach(poly=>{
     const pts=[];
     for(let i=0;i<poly.length-1;i++){
@@ -138,17 +95,42 @@ function drawEmbeddedCoast(){
       }
     }
     const g=new THREE.BufferGeometry().setFromPoints(pts);
-    const l=new THREE.Line(g,coastMat);globeG.add(l);coastObjs.push(l);
+    const l=new THREE.Line(g,coastMat);
+    globeG.add(l);coastObjs.push(l);
   });
 }
 
-// TopoJSON arc decoder + globe line builder
-function buildFromTopo(topo){
-  const tf=topo.transform, arcs=topo.arcs;
+function makeLandTexture(){
+  const c=document.createElement('canvas');
+  c.width=c.height=512;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#0d1f3c';ctx.fillRect(0,0,512,512);
+  ctx.fillStyle='#1a4d2e';
+  COAST.forEach(poly=>{
+    ctx.beginPath();
+    poly.forEach(([lon,lat],i)=>{
+      const x=(lon+180)/360*512;
+      const y=(lat+90)/180*512;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.closePath();
+    ctx.fill();
+  });
+  return new THREE.CanvasTexture(c);
+}
+
+const landTex=makeLandTexture();
+globeG.add(new THREE.Mesh(new THREE.SphereGeometry(1.0008,64,64),new THREE.MeshBasicMaterial({map:landTex,opacity:.5,transparent:true})));
+
+drawCoast();
+
+const CDN_MAP='https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+fetch(CDN_MAP).then(r=>r.json()).then(topo=>{
+  const tf=topo.transform,arcs=topo.arcs;
   function decode(i){
     const raw=i<0?[...arcs[~i]].reverse():arcs[i];
     let x=0,y=0;const out=[];
-    for(const d of raw){x+=d[0];y+=d[1];out.push([x*tf.scale[0]+tf.translate[0], y*tf.scale[1]+tf.translate[1]]);}
+    for(const d of raw){x+=d[0];y+=d[1];out.push([x*tf.scale[0]+tf.translate[0],y*tf.scale[1]+tf.translate[1]]);}
     return out;
   }
   function addRing(ringArcs){
@@ -160,25 +142,17 @@ function buildFromTopo(topo){
       const n=Math.max(2,Math.ceil(Math.hypot(lo2-lo1,la2-la1)/4));
       for(let j=0;j<=n;j++){const t=j/n;pts.push(ll2v(la1+(la2-la1)*t,lo1+(lo2-lo1)*t,1.002));}
     }
-    if(pts.length>1){const g=new THREE.BufferGeometry().setFromPoints(pts);const l=new THREE.Line(g,landMat);globeG.add(l);coastObjs.push(l);}
+    if(pts.length>1){const g=new THREE.BufferGeometry().setFromPoints(pts);const l=new THREE.Line(g,coastMat);globeG.add(l);coastObjs.push(l);}
   }
-  const obj=topo.objects.countries||topo.objects.land;
+  const obj=topo.objects.countries;
   const geoms=obj.type==='GeometryCollection'?obj.geometries:[obj];
   for(const gm of geoms){
     if(gm.type==='Polygon')for(const ring of gm.arcs)addRing(ring);
     else if(gm.type==='MultiPolygon')for(const poly of gm.arcs)for(const ring of poly)addRing(ring);
   }
-}
-
-// Try CDN detailed map; fallback to embedded
-drawLandFill();
-const CDN_MAP='https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
-fetch(CDN_MAP).then(r=>{if(!r.ok)throw 0;return r.json();}).then(topo=>{
-  buildFromTopo(topo);
-  const b=document.getElementById('netbadge');if(b){b.textContent='● mapa detalhado';b.style.color='#4a9';}
+  document.getElementById('netbadge').textContent='● mapa detalhado';document.getElementById('netbadge').style.color='#4a9';
 }).catch(()=>{
-  drawEmbeddedCoast();
-  const b=document.getElementById('netbadge');if(b){b.textContent='● mapa offline';b.style.color='#a85';}
+  document.getElementById('netbadge').textContent='● mapa offline';document.getElementById('netbadge').style.color='#a85';
 });
 
 scene.add(new THREE.AmbientLight(0x556688,1.8));
@@ -186,24 +160,18 @@ const dl=new THREE.DirectionalLight(0x99bbff,1.8);dl.position.set(4,3,5);scene.a
 const hl=new THREE.HemisphereLight(0x3d6fff,0x0a1428,1.2);scene.add(hl);
 
 function gcV(lo1,la1,lo2,la2){
-  const v1=ll2v(la1,lo1).normalize(), v2=ll2v(la2,lo2).normalize();
-  // angle between the two points
+  const v1=ll2v(la1,lo1).normalize(),v2=ll2v(la2,lo2).normalize();
   let dot=Math.max(-1,Math.min(1,v1.dot(v2)));
   const omega=Math.acos(dot);
-  // adaptive segment count: more segments for longer arcs, fewer for short hops
   const n=Math.max(12,Math.min(120,Math.round(omega*60)));
   const sinO=Math.sin(omega);
   const pts=[];
   for(let i=0;i<=n;i++){
     const t=i/n;
     let p;
-    if(sinO<1e-6){ // points nearly identical — straight lerp
-      p=new THREE.Vector3().lerpVectors(v1,v2,t).normalize();
-    }else{ // true spherical interpolation (slerp)
-      const a=Math.sin((1-t)*omega)/sinO, b=Math.sin(t*omega)/sinO;
-      p=new THREE.Vector3(v1.x*a+v2.x*b, v1.y*a+v2.y*b, v1.z*a+v2.z*b);
-    }
-    const h=0.05*Math.sin(Math.PI*t); // smooth arch, max at midpoint
+    if(sinO<1e-6)p=new THREE.Vector3().lerpVectors(v1,v2,t).normalize();
+    else{const a=Math.sin((1-t)*omega)/sinO,b=Math.sin(t*omega)/sinO;p=new THREE.Vector3(v1.x*a+v2.x*b,v1.y*a+v2.y*b,v1.z*a+v2.z*b);}
+    const h=0.05*Math.sin(Math.PI*t);
     pts.push(p.multiplyScalar(1+h));
   }
   return pts;
@@ -215,12 +183,12 @@ function draw(){
   const fs=gfl();
   document.getElementById('stat').textContent=fs.length+' trechos';
   const aps=new Set(fs.flatMap(f=>[f.o,f.d]));
-  const dg=new THREE.SphereGeometry(.011,8,8);
+  const dg=new THREE.SphereGeometry(.014,8,8);
   fs.forEach(f=>{
     if(!AP[f.o]||!AP[f.d])return;
     const [lo1,la1]=AP[f.o],[lo2,la2]=AP[f.d];
     const g=new THREE.BufferGeometry().setFromPoints(gcV(lo1,la1,lo2,la2));
-    const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(TC[f.t]||TC.default),opacity:1,transparent:true,depthTest:true,depthWrite:false,linewidth:3,fog:false}));
+    const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(TC[f.t]||TC.default),opacity:1,transparent:true,depthTest:true,depthWrite:false,linewidth:4}));
     globeG.add(l);gLines.push(l);
   });
   aps.forEach(code=>{
@@ -228,12 +196,11 @@ function draw(){
     const [lon,lat]=AP[code];
     const isCWB=code==='CWB';
     const m=new THREE.Mesh(dg,new THREE.MeshBasicMaterial({color:isCWB?0xffdd44:0x77ccff,emissive:isCWB?0xffaa00:0x3388ff}));
-    m.position.copy(ll2v(lat,lon,1.01));
+    m.position.copy(ll2v(lat,lon,1.012));
     globeG.add(m);gLines.push(m);
   });
 }
 
-// Interaction
 let rotY=-0.8,rotX=-0.3,drag=false,lx=0,ly=0,spin=true;
 canvas.addEventListener('mousedown',e=>{drag=true;spin=false;lx=e.clientX;ly=e.clientY;});
 window.addEventListener('mouseup',()=>drag=false);
@@ -250,7 +217,6 @@ window.addEventListener('resize',()=>{
   renderer.setSize(W,H);camera.aspect=W/H;camera.updateProjectionMatrix();
 });
 
-// ── CONTROLS ────────────────────────────────────────────────────────────────
 const sl=document.getElementById('yr-sl'),vd=document.getElementById('yr-val'),pb=document.getElementById('pb');
 sl.addEventListener('input',e=>{showAll=false;document.getElementById('ba').classList.remove('on');year=+e.target.value;vd.textContent=year;draw();});
 function toggleAll(){showAll=!showAll;document.getElementById('ba').classList.toggle('on',showAll);vd.textContent=showAll?'todos':year;draw();}
@@ -262,7 +228,6 @@ pb.addEventListener('click',()=>{
   playTimer=setInterval(()=>{year++;sl.value=year;vd.textContent=year;draw();if(year>=2026){clearInterval(playTimer);playTimer=null;pb.textContent='▶';}},850);
 });
 
-// Legend
 (function(){
   const types=[...new Set(FL.map(f=>f.t))].sort();
   document.getElementById('leg').innerHTML=types.map(t=>`<div class="lr"><div class="ls" style="background:${TC[t]||TC.default}"></div>${t}</div>`).join('');
