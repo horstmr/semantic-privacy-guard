@@ -170,6 +170,9 @@ function draw(){
   });
   routes.forEach(f=>{
     const [lo1,la1]=AP[f.o],[lo2,la2]=AP[f.d];
+    const v1=ll2v(la1,lo1).normalize(),v2=ll2v(la2,lo2).normalize();
+    const angle=Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI;
+    if(angle>150)return;
     const g=new THREE.BufferGeometry().setFromPoints(gcV(lo1,la1,lo2,la2));
     const l=new THREE.Line(g,new THREE.LineBasicMaterial({color:new THREE.Color(TC[f.t]||TC.default),opacity:.85,transparent:true,depthTest:true,depthWrite:false,linewidth:3}));
     globeG.add(l);gLines.push(l);
