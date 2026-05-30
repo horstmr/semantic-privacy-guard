@@ -15,7 +15,6 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <math.h>
-#include "html_page.h"             // carrega HTML do arquivo separado
 
 TFT_eSPI tft = TFT_eSPI();
 WebServer server(80);
@@ -317,7 +316,7 @@ void runAnimation() {
 }
 
 // ---- servidor web ----
-// HTML_PAGE agora vem de html_page.h
+const char HTML_PAGE[] PROGMEM = "<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content='width=device-width,initial-scale=1'><title>Pixel Quest</title><style>*{margin:0;padding:0}body{font-family:Arial;background:#16213e;color:#fff;min-height:100vh;padding:20px;display:flex;align-items:center;justify-content:center}.container{background:rgba(0,0,0,0.8);border-radius:15px;padding:30px;max-width:400px;width:100%;border:2px solid gold}h1{text-align:center;margin-bottom:30px;color:gold}label{display:block;margin:15px 0 5px;color:gold;font-weight:bold}input{width:100%;padding:8px;margin-bottom:15px;border:1px solid gold;border-radius:8px;background:rgba(255,255,255,0.1);color:#fff}.button-group{display:flex;gap:10px;margin:20px 0}button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:bold;cursor:pointer;color:white}.play{background:#00a854}.play:hover{background:#00d65c}.pause{background:#d9534f}.pause:hover{background:#ff6e6e}.color{background:#9966ff}.color:hover{background:#bb99ff}.info{background:rgba(31,38,135,0.3);border-left:4px solid gold;padding:15px;border-radius:8px;font-size:12px;margin-top:20px}</style></head><body><div class=container><h1>PIXEL QUEST</h1><label>Titulo</label><input type=text id=title value='PIXEL QUEST' maxlength=20><label>Subtitulo</label><input type=text id=subtitle value='nivel 1' maxlength=15><label>Velocidade</label><input type=range id=speed min=50 max=150 value=100><div style='text-align:center;color:gold;margin:10px 0'><span id=speedVal>100</span>%</div><div class=button-group><button class=play onclick='sendCmd(\"play\")'>PLAY</button><button class=pause onclick='sendCmd(\"pause\")'>PAUSE</button><button class=color onclick='sendCmd(\"color\")'>CORES</button></div><div class=info><b>WiFi:</b> PIXEL QUEST<br><b>IP:</b> 192.168.4.1<br><b>Status:</b> Online</div></div><script>document.getElementById('speed').addEventListener('input',function(e){document.getElementById('speedVal').innerText=e.target.value;fetch('/api/speed?val='+e.target.value)});document.getElementById('title').addEventListener('change',function(e){fetch('/api/title?val='+encodeURIComponent(e.target.value))});document.getElementById('subtitle').addEventListener('change',function(e){fetch('/api/subtitle?val='+encodeURIComponent(e.target.value))});function sendCmd(cmd){fetch('/api/'+cmd)}</script></body></html>";
 
 void handleRoot() {
   server.send(200, "text/html", HTML_PAGE);
