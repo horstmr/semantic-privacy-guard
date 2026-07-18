@@ -1,0 +1,225 @@
+Prompt Engineering
+Começar agora
+System Architect v2.0
+Prompt Engineering
+para Devs
+Entenda a mecânica real por trás dos LLMs, tokens, atenção, contexto e raciocínio. Aprenda como manter a qualidade dos seus Agentes mesmo com longas sessões.
+Garantir minha vaga
+Investimento:
+R$ 99,00
+Prompt Passivo
+Heurísticas moles, chat comum
+Pipeline Cognitivo
+Determinístico, seguro, otimizado
+CONFIGURAÇÃO DE EXECUÇÃO:
+Ambiente:
+Structured API Mode
+Temperatura:
+0.02 (Estrito)
+Âncoras de Contexto:
+Loaded [user_schema]
+Formato Estrito:
+raw_code_only
+MÉTRICAS ESTIMADAS:
+Tokens Inúteis:
+0% (Sintaxe Direta)
+Consistência:
+100% Determinístico
+Risco Invasão:
+Protegido por Padrão
+Simular Execução
+cognitive_context_pipeline.php
+Simulador de Motor Cognitivo
+Clique em "Simular Execução" para ver o pipeline de engenharia focar a atenção do modelo e obter determinismo absoluto.
+O que nossos alunos estão achando:
+Feedback real de desenvolvedores que já transformaram seu uso diário de inteligência artificial.
+★
+"Que conteúdo excelente vocês estão trazendo para o clã!! Top!!"
+Caio Vitor
+Aluno - Beer and Code
+★
+"Está muito bem explicado. Bora partir para engenheiro de IA"
+Andre Luiz
+Aluno - Beer and Code
+★
+"Que conteúdo fantástico, Virgu!!"
+Caio Vitor
+Aluno - Beer and Code
+★
+"Que conteúdo excelente!"
+Caio Vitor
+Aluno - Beer and Code
+★
+"Cara que conteúdo de ouro! Ainda mais na era de "gastar tokens" isso dá um norte que nunca tinha visto. Vlw demais Virgu!"
+Gabriel
+Aluno - Beer and Code
+★
+"Esse modulo ficou excelente!"
+Mikael
+Aluno - Beer and Code
+★
+"Que conteúdo excelente vocês estão trazendo para o clã!! Top!!"
+Caio Vitor
+Aluno - Beer and Code
+★
+"Está muito bem explicado. Bora partir para engenheiro de IA"
+Andre Luiz
+Aluno - Beer and Code
+★
+"Que conteúdo fantástico, Virgu!!"
+Caio Vitor
+Aluno - Beer and Code
+★
+"Que conteúdo excelente!"
+Caio Vitor
+Aluno - Beer and Code
+★
+"Cara que conteúdo de ouro! Ainda mais na era de "gastar tokens" isso dá um norte que nunca tinha visto. Vlw demais Virgu!"
+Gabriel
+Aluno - Beer and Code
+★
+"Esse modulo ficou excelente!"
+Mikael
+Aluno - Beer and Code
+Usar IA vs Entender IA
+Tem uma diferença enorme entre usar IA e entender IA.
+Quem usa, depende da sorte. Quem entende, extrai.
+A maioria dos devs ficou na superfície: aprendeu a pedir bem, a "ser específico", a "dar contexto". Mas ninguém explicou o que acontece lá dentro quando você aperta Enter. E é exatamente isso que muda tudo.
+Fase 01
+Hoje você está aqui:
+Usa IA como ferramenta fundamental, abre prompt, arrisca integrações, consome tokens testando ideias e mais ideias.
+Instável
+Ver impacto →
+Fase 02
+Primeira evolução:
+Começa a entender a base do uso de LLM, o que é um token, como as respostas são geradas.
+Em transição
+Ver impacto →
+Fase 03
+Domínio total:
+Você domina o contexto, entende todo background, começa a arquitetar com IA. Sem gerar chat aleatório, extraindo o melhor dos modelos.
+Maestria
+Ver impacto →
+SIMULADOR DE FLUXO COGNITIVO
+Nível: Uso Comum / Sorte
+Previsibilidade
+Altamente Instável
+Eficiência de Tokens
+20%
+Custo Operacional
+Consumo excessivo de contexto redundante.
+// Exemplo Real de Prompt Executado
+>_ Input:
+"Gere uma função de ordenação rápida em PHP..."
+>_ Comportamento do Modelo (Hallucination risk):
+"Claro! Aqui está o código para você. O QuickSort é uma ordenação muito rápida. Eu também posso te explicar como o algoritmo funciona passo-a-passo caso queira saber. No entanto, lembre-se de que se o array for muito pequeno, você..."
+(Desperdício de 350+ tokens com preâmbulos genéricos e falha em impor tipagem estrita ou tratamento de erros).
+Para atingir este nível você vai dominar:
+O que você vai dominar
+— Features do módulo entregues como mecanismos práticos.
+01
+Arquitetura Cognitiva
+Template: Role, Objective, Constraints, Context, Output spec.
+02
+Token Ops & Re-anchoring
+Métodos práticos para evitar o 'lost in the middle'.
+03
+Playbook de Operação
+Checkpoints e resets sem perda de contexto essencial.
+04
+Guardrails & Fallbacks
+Regras anti-contradição e tratamento de dados ausentes.
+05
+Pipeline Autor-Revisor
+Qualidade superior sem precisar pedir 10 vezes.
+06
+Personas Modulares
+Tech Lead, SRE, Security Reviewer como interfaces de competência.
+Quero Dominar Esse Nível
+De maneira prática, se você não tiver este domínio seus prompts estão fadados a falhas quando aumentar a complexidade. Provavelmente você já passou ou está passando por isso:
+Chat termina um lixo
+O contexto se perde e a alucinação toma conta conforme a thread cresce. Você gasta mais tempo corrigindo que criando.
+Refém da verbosidade
+Gasto desnecessário de tokens com instruções ignoradas. Você escreve parágrafos e a IA te entrega o básico.
+Inconsistência de Saída
+O prompt funciona uma vez, mas falha na segunda. Impossível integrar isso em um fluxo de produção confiável.
+Todas as aulas que vão te levar ao domínio do Prompt Engineering:
+1
+Aula 1: O Fim dos "Pedidinhos" (A Verdadeira Arquitetura Cognitiva)
+Descubra o erro conceitual grave que a esmagadora maioria comete ao tratar a IA como um mero mecanismo de busca. Nesta aula, você aprenderá que um prompt não é uma simples pergunta, mas sim a configuração exata de como o modelo deve processar a informação. Vamos desvendar o perigo da "ilusão da plausibilidade", em que a IA soa extremamente confiante, mas entrega soluções genéricas que podem sabotar e quebrar o seu sistema. Pare de aceitar comandos amadores e aprenda a criar uma verdadeira Arquitetura Cognitiva, dominando personas, contextos, restrições e objetivos precisos para extrair resultados que realmente funcionam.
+2
+Aula 2: A Caixa Preta da IA (Dominando Tokens, Contexto e Atenção)
+3
+Aula 3: Engenharia de Estado (Como Salvar um Chat da Degradação)
+4
+Aula 4: O Motor da Inteligência (Modelos Reativos vs. Raciocínio Profundo)
+5
+Aula 5: O Código do Raciocínio (Decifrando o Chain of Thought)
+6
+Aula 6: O Antídoto para a "IA Júnior" (Construindo o Scaffolding)
+7
+Aula 7: Múltiplas Realidades (Planejamento Não Linear e Tree of Thoughts)
+8
+Aula 8 — Consistência interna e válvulas de escape
+9
+Aula 9 — Auto-refinamento: o modelo como autor e revisor
+10
+Aula 10 — Personas, papéis e especialização situacional
+11
+Aula 11 — Design de saída e controle de verbosidade
+Quero Me Inscrever Agora
+Com quem vou aprender?
+Lucas Souza (Virgu)
+AI Engineer | Co-Founder Beer and Code
+Engenheiro de IA, liderando um time de IA em uma multinacional, professor na maior comunidade de Engenharia de IA do mundo.
+Experiência Real e Prática
+Sem teorias cansativas. Você aprende com quem implementa Inteligência Artificial em soluções reais de alto impacto.
+Professor na Maior Comunidade de Engenharia de IA do mundo
+Conteúdo prático de quem domina didática e ensina centenas de desenvolvedores a se posicionarem no mercado como Engenheiros de IA através do Clã Beer and Code.
+Domine o Prompt Engineering.
+1 ano de acesso
+Certificado de conclusão
+Campo de dúvidas em cada aula
+Menor valor já ofertado
+De R$ 199 | Por apenas:
+R$ 99,00
+Ou 12 x
+R$ 10,24
+Brazil +55
+Inscrever-se
+Acesso imediato após aprovação
+O Método Beer and Code
+Este não é um curso de
+"melhores prompts para o dia a dia"
+.
+O que VOCÊ NÃO VAI ENCONTRAR:
+Não tem template de prompt para copiar e colar sem entender.
+Não tem lista rasa de comandos mágicos ou truques bobos.
+Não ensina a apenas pedir passivamente para a IA fazer o seu trabalho de qualquer jeito.
+Procurando apenas copia-e-cola? Este não é o seu lugar. Queremos formar arquitetos, não apertadores de botões.
+A Filosofia Real
+Este curso ensina o que está acontecendo dentro do modelo enquanto ele processa o que você escreveu.
+Quando você entende a mecânica profunda por baixo dos panos, tudo muda:
+Você sabe por que o contexto longo degrada a resposta.
+Você sabe quando usar Chain of Thought e quando ele atrapalha.
+Você sabe como estruturar raciocínio para que o modelo não desvie no meio.
+Você entende por que o modelo "perdeu o fio" da conversa — e como evitar.
+Você constrói agentes que não quebram porque você entende o estado que estão manipulando.
+FOCO EM ARQUITETURA COGNITIVA REAL
+Quero aprender a de fato extrair o melhor dos modelos
+Dúvidas Frequentes
+Tire suas principais dúvidas sobre o treinamento de Prompt Engineering.
+Para quem é este curso?
+Quanto tempo de acesso?
+Tem certificado?
+Sou dev e quero dominar IA, este curso pode me ajudar?
+Vantagens para Desenvolvedores
+Sem enrolação: Focado em extração de código limpo e arquiteturas escaláveis para produção.
+Mude seu conceito: Entendo como a engenharia de prompt pode te avançar muitos níveis do seu domínio atual
+Produtividade x10: Utilize a IA ao seu favor, domine o contexto real dos seus prompts.
+Investimento Único
+Por apenas
+R$ 99,00
+Quero ser um Engenheiro de Prompt
+© 2026 Beer and Code
+Ambiente Seguro

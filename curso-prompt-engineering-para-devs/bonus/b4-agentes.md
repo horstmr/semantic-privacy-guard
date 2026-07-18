@@ -1,4 +1,6 @@
-# Módulo 09 — Agentes
+# Bônus B4 — Agentes
+
+> **Trilha complementar** — além das 11 aulas oficiais.
 
 > Um agente é um LLM em **loop**, com **ferramentas** e um **objetivo**, que
 > decide sozinho os próximos passos até terminar. É onde tudo do curso se junta
@@ -16,7 +18,7 @@
 
 ## 1. Do tool calling ao agente
 
-No Módulo 08 você viu o loop: modelo pede ferramenta → código executa →
+No Bônus B3 você viu o loop: modelo pede ferramenta → código executa →
 resultado volta → repete. Um **agente** é esse loop com três acréscimos:
 
 1. Um **objetivo** de alto nível ("resolva o ticket do cliente"), não uma única
@@ -27,7 +29,7 @@ resultado volta → repete. Um **agente** é esse loop com três acréscimos:
    desistir).
 
 O laço mental de um agente costuma ser: **pensar → agir → observar → repetir.**
-Ele raciocina sobre o que fazer (Módulo 05), escolhe uma ferramenta (Módulo 08),
+Ele raciocina sobre o que fazer (Aula 5), escolhe uma ferramenta (Bônus B3),
 lê o resultado, e decide o próximo passo — até atingir o objetivo.
 
 ```
@@ -43,18 +45,18 @@ objetivo → [ pensar → escolher ação → executar → observar ] ⟳ → re
 Um agente de produção tem estes componentes — e cada um usa algo que você já
 aprendeu:
 
-| Componente | O que é | Módulo que sustenta |
-|-----------|---------|---------------------|
-| **System prompt / papel** | Quem o agente é, seu objetivo, suas regras e limites | 01, 02 |
-| **Ferramentas** | O que ele pode fazer no mundo | 08 |
-| **Loop de controle** | O código que roda pensar→agir→observar | 08 |
-| **Memória / estado** | O que ele lembra entre passos e entre sessões | 07 |
-| **Critério de parada** | Quando parar (sucesso, falha, limite de passos) | este |
-| **Formato das ações** | Saída estruturada para cada decisão | 04 |
-| **Avaliação** | Como você sabe que o agente funciona | 06 |
+| Componente | O que é | Onde você aprendeu |
+|-----------|---------|--------------------|
+| **System prompt / papel** | Quem o agente é, seu objetivo, suas regras e limites | Aulas 1 e 10 |
+| **Ferramentas** | O que ele pode fazer no mundo | Bônus B3 |
+| **Loop de controle** | O código que roda pensar→agir→observar | Bônus B3 |
+| **Memória / estado** | O que ele lembra entre passos e entre sessões | Aula 3 · Bônus B2 |
+| **Critério de parada** | Quando parar (sucesso, falha, limite de passos) | este bônus |
+| **Formato das ações** | Saída estruturada para cada decisão | Aula 11 |
+| **Avaliação** | Como você sabe que o agente funciona | Bônus B1 |
 
 Se um desses está frouxo, o agente falha em produção. Um agente é, literalmente,
-os oito módulos anteriores costurados por um loop.
+tudo que você aprendeu no curso costurado por um loop.
 
 ---
 
@@ -106,13 +108,13 @@ Autonomia é poderosa e perigosa. Os modos de falha típicos e suas contenções
   (checar a saída de uma ferramenta antes de seguir), e valide estados críticos
   no seu código.
 - **Explosão de contexto.** Depois de muitos passos, o histórico estoura a
-  janela e o custo dispara. → Aplique o Módulo 07: resuma, use estado
+  janela e o custo dispara. → Aplique o Bônus B2: resuma, use estado
   estruturado, memória externa.
 - **Ação errada com efeito real.** O agente faz algo caro/irreversível baseado
-  numa decisão ruim. → Módulo 08: confirmação humana para ações sensíveis,
+  numa decisão ruim. → Bônus B3: confirmação humana para ações sensíveis,
   permissões mínimas, limites de valor (como o "R$ 500" acima).
 - **Injeção via conteúdo.** Um dado processado tenta sequestrar o agente. →
-  Módulo 01 (separar dado de instrução) + Módulo 08 (validar toda ação).
+  Aula 1 (separar dado de instrução) + Bônus B3 (validar toda ação).
 - **Impossível de depurar.** "Deu errado" mas você não sabe onde. → **Logue cada
   passo**: pensamento, ferramenta escolhida, argumentos, resultado. O rastro é
   seu debugger.
@@ -154,7 +156,7 @@ Agentes são o topo da escada de complexidade. Suba só quando precisa.
 **Não use agente quando:**
 - um **prompt único** resolve (a maioria dos casos!);
 - uma **cadeia fixa** de 2–3 chamadas resolve (mais simples, mais previsível,
-  mais barato) — Módulo 05, prompt chaining;
+  mais barato) — Aula 5, prompt chaining;
 - a confiabilidade é crítica e você não pode arcar com a imprevisibilidade da
   autonomia.
 
@@ -201,14 +203,14 @@ Agentes são o topo da escada de complexidade. Suba só quando precisa.
 5. **Contenção.** Liste os 6 modos de falha da seção 4 e, para um agente que
    emite reembolsos, escreva uma proteção concreta para cada um.
 
-Soluções em [`exercicios/solucoes.md`](./exercicios/solucoes.md).
+Soluções em [`exercicios/solucoes.md`](../exercicios/solucoes.md).
 
 ---
 
 ## Resumo
 
 - Um **agente** é um LLM em **loop** (pensar→agir→observar) com **ferramentas**,
-  **objetivo** e **critério de parada** — a composição de todos os módulos.
+  **objetivo** e **critério de parada** — a composição de tudo que veio antes.
 - O **system prompt** é o contrato central: papel, objetivo, ferramentas,
   processo, limites, parada.
 - Agentes quebram em produção por **loop infinito, acúmulo de erro, explosão de
@@ -221,18 +223,21 @@ Soluções em [`exercicios/solucoes.md`](./exercicios/solucoes.md).
 
 ## Você chegou ao fim da trilha 🎉
 
-Recapitulando o caminho:
+Recapitulando o caminho completo:
 
-1. **Mentalidade** — prompt é código (Mód. 00).
-2. **Os quatro pilares** — estrutura, instrução, exemplos, formato (Mód. 01–04).
-3. **Técnica** — raciocínio (Mód. 05) e a disciplina de testar e versionar
-   (Mód. 06).
-4. **Produção** — contexto (Mód. 07), ferramentas (Mód. 08) e agentes (Mód. 09).
+1. **Mecânica** — prompt como configuração, a caixa preta e engenharia de estado
+   (Aulas 1–3).
+2. **Raciocínio** — motores, Chain of Thought, scaffolding e Tree of Thoughts
+   (Aulas 4–7).
+3. **Confiabilidade** — consistência, auto-refinamento, personas e design de
+   saída (Aulas 8–11).
+4. **Produção (bônus)** — testes/evals (B1), contexto e RAG (B2), tool calling
+   (B3) e agentes (B4).
 
 O próximo passo é **praticar no seu trabalho real**. Use a
-[biblioteca de prompts](./templates/biblioteca-de-prompts.md) como cola, os
-[exercícios](./exercicios/README.md) para treinar, e o
-[glossário](./recursos/glossario-e-referencias.md) para aprofundar.
+[biblioteca de prompts](../templates/biblioteca-de-prompts.md) como cola, os
+[exercícios](../exercicios/README.md) para treinar, e o
+[glossário](../recursos/glossario-e-referencias.md) para aprofundar.
 
 E lembre do mantra: **se você não consegue explicar o resultado, você não fez
 engenharia de prompt — você teve sorte.** Agora você sabe fazer engenharia.

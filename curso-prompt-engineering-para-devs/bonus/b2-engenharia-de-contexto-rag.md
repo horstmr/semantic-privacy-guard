@@ -1,4 +1,6 @@
-# Módulo 07 — Engenharia de contexto
+# Bônus B2 — Engenharia de contexto e RAG
+
+> **Trilha complementar** — além das 11 aulas oficiais.
 
 > Prompt engineering é escrever a instrução. **Context engineering** é decidir
 > o que colocar na janela do modelo — e o que deixar de fora. Em sistemas
@@ -24,7 +26,7 @@ gerando. Ela tem um teto (em tokens) e cada token custa dinheiro e latência.
 Dois erros opostos:
 
 - **Contexto de menos** → o modelo não tem a informação e **alucina** para
-  preencher (Módulo 00). Ex: perguntar sobre a política interna da empresa sem
+  preencher (Aula 2). Ex: perguntar sobre a política interna da empresa sem
   colar a política.
 - **Contexto de mais** → você enche a janela de coisa irrelevante, o custo
   explode, e o sinal importante se **dilui** no meio do ruído. Mais contexto não
@@ -187,7 +189,7 @@ Isso reforça a estrutura que você já aprendeu: **estável primeiro, variável
    fixo no início e só a variável no fim. Isso mudou a estrutura? Ficou também
    mais legível?
 
-Soluções em [`exercicios/solucoes.md`](./exercicios/solucoes.md).
+Soluções em [`exercicios/solucoes.md`](../exercicios/solucoes.md).
 
 ---
 
@@ -203,4 +205,4 @@ Soluções em [`exercicios/solucoes.md`](./exercicios/solucoes.md).
   reenviar tudo.
 - **Prompt caching** premia a estrutura "estável primeiro, variável por último".
 
-**Próximo:** [Módulo 08 — Tool calling →](./08-tool-calling.md)
+**Próximo:** [Bônus B3 — Tool calling →](./b3-tool-calling.md)

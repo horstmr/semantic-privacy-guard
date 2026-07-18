@@ -1,4 +1,6 @@
-# Módulo 06 — Prompt como código: testes e versão
+# Bônus B1 — Prompt como código: testes e versão
+
+> **Trilha complementar** — além das 11 aulas oficiais.
 
 > Este é o módulo que separa quem "usa IA" de quem **faz engenharia** com IA.
 > Se você não consegue medir se um prompt está bom, você não pode melhorá-lo —
@@ -52,7 +54,7 @@ Comece com uma planilha ou um arquivo. Exemplo (JSON Lines):
 **Como escolher os casos** (mire cobertura, não volume):
 
 - **Casos felizes** típicos de cada categoria.
-- **Casos de borda** do Módulo 02: vazio, tipo errado, ambíguo, múltiplas
+- **Casos de borda** do Aula 8: vazio, tipo errado, ambíguo, múltiplas
   respostas.
 - **Casos adversariais**: injeção de prompt, entrada maliciosa.
 - **Casos reais** que já quebraram em produção (adicione cada bug como um novo
@@ -78,7 +80,7 @@ def avalia(esperado, obtido):
 
 Ou valida propriedades: "o JSON tem os campos certos?", "o total é um número
 positivo?", "a resposta tem no máximo 3 frases?". **Prefira isto sempre que
-possível** — é objetivo, barato e repetível. É por isso que o Pilar 4 (formato
+possível** — é objetivo, barato e repetível. É por isso que a Aula 11 (design
 de saída) importa tanto: saída estruturada é saída testável.
 
 ### (b) Métricas de similaridade
@@ -231,13 +233,13 @@ não só um número.
 
 4. **Instabilidade.** Escolha 3 casos e rode cada um 5 vezes. Algum dá respostas
    diferentes? Esse é um caso frágil. O que no prompt o deixa instável? (Volte
-   aos Módulos 01–04.)
+   às aulas de fundamentos (Aulas 1, 6, 8 e 11).)
 
 5. **LLM-juiz.** Para uma tarefa de texto livre (ex: qualidade de um resumo),
    escreva um prompt-juiz com rubrica de 1 a 5. Rode-o em 5 saídas e depois
    avalie você mesmo as mesmas 5. O juiz concordou com você? Onde divergiu?
 
-Soluções em [`exercicios/solucoes.md`](./exercicios/solucoes.md).
+Soluções em [`exercicios/solucoes.md`](../exercicios/solucoes.md).
 
 ---
 
@@ -246,7 +248,7 @@ Soluções em [`exercicios/solucoes.md`](./exercicios/solucoes.md).
 - **Uma execução não é teste.** Meça sobre uma **bateria** de casos (felizes,
   bordas, adversariais, regressões reais).
 - Avalie com a estratégia mais barata que sirva: **match/regra** > similaridade
-  > **LLM-juiz** > **humano**. Saída estruturada (Pilar 4) é o que torna isso
+  > **LLM-juiz** > **humano**. Saída estruturada (Aula 11) é o que torna isso
   possível.
 - Um **eval mínimo** é um loop de dez linhas. Rode a cada mudança.
 - **Versione** prompts como código: em arquivos, com changelog, modelo e
@@ -254,4 +256,4 @@ Soluções em [`exercicios/solucoes.md`](./exercicios/solucoes.md).
 - **Detecte regressão** comparando caso a caso, não só o total. Nunca mude o
   prompt de produção sem re-rodar a bateria.
 
-**Próximo:** [Módulo 07 — Engenharia de contexto →](./07-engenharia-de-contexto.md)
+**Próximo:** [Bônus B2 — Engenharia de contexto e RAG →](./b2-engenharia-de-contexto-rag.md)
