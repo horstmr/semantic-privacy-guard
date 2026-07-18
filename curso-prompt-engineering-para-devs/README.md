@@ -108,6 +108,15 @@ Temas **além das 11 aulas oficiais**, que aprofundam a promessa do curso sobre
 - [Glossário e referências](./recursos/glossario-e-referencias.md)
 - [Estrutura original do curso (referência)](./recursos/estrutura-original-do-curso.md)
 
+## Quer ir além de prompt engineering?
+
+Há uma **trilha complementar** neste repositório —
+[Engenharia de Software em IA Aplicada](../curso-engenharia-ia-aplicada/README.md)
+— que cobre o que fica *em volta* de escrever bons prompts: fundamentos de IA/ML,
+MCP, agentes avançados, e IA aplicada a UX/UI, DevOps, gestão de projetos,
+arquitetura, fine-tuning, governança e carreira. Ela **não repete** os assuntos
+deste curso — aponta de volta para cá quando o tema já foi coberto.
+
 ---
 
 ## Como estudar
