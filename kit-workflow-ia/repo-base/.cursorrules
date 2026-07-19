@@ -1,0 +1,28 @@
+# .cursorrules — regras do projeto para o Cursor (e assistentes compatíveis).
+# A fonte da verdade é o AGENTS.md; este arquivo resume e aponta para ele.
+
+Este projeto segue o workflow do kit "Workflow Completo com IA".
+Leia e obedeça o AGENTS.md na raiz. Regras essenciais:
+
+ARQUITETURA
+- Padrão: <Clean Architecture + DDD (+ CQRS onde aplicável)>.
+- Regra de dependência: sempre para dentro (infra → application → domain).
+  Domínio é puro: nada de framework/ORM/HTTP em src/domain.
+- DB/HTTP só em src/infra. Regra de negócio só em src/domain. Controllers finos.
+
+SPEC-DRIVEN
+- Implemente contra docs/specs/<feature>/spec.md.
+- Uma tarefa por vez; PRs pequenos e revisáveis. Não gere a feature inteira de uma vez.
+- Todo código novo vem com teste citando o critério de aceite (CA).
+- Cite o requisito atendido no código (// Rn) e no commit.
+
+QUALIDADE
+- Erros explícitos com código; nunca engula exceção; use Result para falhas esperadas.
+- Sem `any` injustificado. Sem lib nova sem justificar (pergunte antes).
+- Não vaze entidade/DB na resposta (use DTOs).
+
+QUANDO EM DÚVIDA
+- Se faltar informação para decidir, PARE e pergunte. Não invente APIs nem requisitos.
+
+VOCABULÁRIO DO DOMÍNIO
+- Use os termos do glossário no AGENTS.md exatamente como definidos.

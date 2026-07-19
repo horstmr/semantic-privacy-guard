@@ -117,6 +117,11 @@ MCP, agentes avançados, e IA aplicada a UX/UI, DevOps, gestão de projetos,
 arquitetura, fine-tuning, governança e carreira. Ela **não repete** os assuntos
 deste curso — aponta de volta para cá quando o tema já foi coberto.
 
+E para colocar tudo em prática construindo software com IA, veja o
+[**Kit: Workflow Completo com IA**](../kit-workflow-ia/README.md) — 6 módulos,
+40+ skills prontas, arquiteturas para IA (Clean/DDD/CQRS), templates de
+spec-driven-development e um repo-base pronto para aplicar no seu projeto real.
+
 ---
 
 ## Como estudar
