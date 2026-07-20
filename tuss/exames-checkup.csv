@@ -1,0 +1,16 @@
+exame,tuss_informado,confianca,observacao
+Hemograma completo,40304361,alta,
+Glicose,40302040,alta,
+Colesterol total,40301508,alta,
+Colesterol HDL,40301630,conferir,codigo repetido na lista original (mesmo da creatinina) — o extrator resolve pelo nome
+Colesterol LDL,40301656,conferir,validar pelo nome na planilha
+Triglicerideos,40302504,alta,
+Creatinina,40301630,conferir,codigo repetido com HDL na lista original — o extrator resolve pelo nome
+TGO (AST),40302377,alta,
+TGP (ALT),40302385,alta,
+TSH,40316530,alta,
+T4 livre,40316521,alta,
+Testosterona total,40316513,confirmada,confirmado em fontes TUSS externas
+Testosterona livre,40316505,confirmada,confirmado em fontes TUSS externas
+PSA total,40316297,conferir,validar pelo nome na planilha
+Vitamina D (25-OH),40302733,alta,
