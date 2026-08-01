@@ -4,6 +4,12 @@
 **Data da extração:** 01/08/2026
 **Pares de idiomas:** EN-US / EN-GB / DE-DE → PT-BR (e PT-PT em um caso)
 
+> ⚠️ **Este documento cobre o recorte 2023–2026.** Uma varredura posterior de todo
+> o histórico mostrou que a atividade começa no **2º semestre de 2019** e que duas
+> agências de grande porte — **TranslateMedia** e **Toppan Digital Language** —
+> não constam aqui. Leia **`ANALISE-PERIODO-COMPLETO.md`** para o quadro correto
+> e para o histórico financeiro de £15,8 mil recuperado.
+
 ---
 
 ## Como "trabalho realizado" foi determinado

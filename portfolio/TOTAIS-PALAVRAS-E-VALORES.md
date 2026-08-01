@@ -6,6 +6,13 @@ Documento complementar ao `PORTFOLIO.md`. Contém apenas dados **extraídos
 literalmente dos e-mails** — nada estimado ou arredondado por inferência.
 As lacunas estão explicitamente marcadas.
 
+> ⚠️ **A seção 3 deste arquivo está desatualizada.** A varredura completa do
+> histórico recuperou **59 remessas de pagamento da TranslateMedia/Toppan Digital
+> Language entre 2020 e 2025, totalizando £ 15.769–15.898** — valores que estão no
+> corpo do e-mail, não em PDF. Ver **`ANALISE-PERIODO-COMPLETO.md`**.
+> A afirmação de que "os valores pagos estão majoritariamente em PDFs" vale para
+> LanguageWire, Flexword e Alconost, mas **não** para TranslateMedia/Toppan.
+
 ---
 
 ## 1. Totais de palavras confirmados
