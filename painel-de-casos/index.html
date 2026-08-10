@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<!-- Observação: o HtmlService remove <meta> e <title> do arquivo.
+     A viewport e o título são aplicados no Codigo.gs via
+     .addMetaTag('viewport', ...) e .setTitle(...). As linhas abaixo
+     valem apenas quando o arquivo é aberto direto no navegador. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel de Casos</title>
+<style>
+/* ---------- Tokens: tema claro completo ---------- */
+:root {
+  color-scheme: light dark;
+
+  --ground:      #F6F8F8;
+  --surface:     #FFFFFF;
+  --surface-2:   #EDF1F2;
+  --ink:         #101619;
+  --ink-muted:   #5B686E;
+  --ink-faint:   #86959C;
+  --line:        #DBE2E5;
+  --line-strong: #C3CED3;
+
+  --accent:      #0E5A61;
+  --accent-soft: #E1EDED;
+
+  --ok:          #1E7A4C;
+  --ok-soft:     #E2F1E9;
+  --warn:        #8F5E0C;
+  --warn-soft:   #F7EDDB;
+  --crit:        #A82F32;
+  --crit-soft:   #F7E5E5;
+
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+/* ---------- Tema escuro: só redefine tokens ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0C1214;
+    --surface:     #141C1F;
+    --surface-2:   #1B2529;
+    --ink:         #E4EBEE;
+    --ink-muted:   #93A2A9;
+    --ink-faint:   #6E7E85;
+    --line:        #233035;
+    --line-strong: #2F3E44;
+
+    --accent:      #4FB0AA;
+    --accent-soft: #12312F;
+
+    --ok:          #5FBF8B;
+    --ok-soft:     #13291E;
+    --warn:        #D9A441;
+    --warn-soft:   #2B2314;
+    --crit:        #E0797B;
+    --crit-soft:   #2E1A1B;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:      #0C1214;
+  --surface:     #141C1F;
+  --surface-2:   #1B2529;
+  --ink:         #E4EBEE;
+  --ink-muted:   #93A2A9;
+  --ink-faint:   #6E7E85;
+  --line:        #233035;
+  --line-strong: #2F3E44;
+
+  --accent:      #4FB0AA;
+  --accent-soft: #12312F;
+
+  --ok:          #5FBF8B;
+  --ok-soft:     #13291E;
+  --warn:        #D9A441;
+  --warn-soft:   #2B2314;
+  --crit:        #E0797B;
+  --crit-soft:   #2E1A1B;
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  /* 100dvh acompanha o recolher da barra do navegador no celular.
+     Dentro de iframe, resolve para a altura do frame — que é o
+     comportamento correto nos dois casos. */
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;               /* a rolagem é da lista, nunca da página */
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 16px evita o zoom automático do iOS ao focar um campo */
+input, select, button { font: inherit; font-size: 16px; color: inherit; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* ---------- Barra superior ---------- */
+.barra {
+  flex: none;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 10px max(14px, env(safe-area-inset-right)) 10px max(14px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barra-topo { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+
+.titulo {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.selo {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.selo[hidden] { display: none; }
+
+.carimbo { margin-left: auto; font-size: 12px; color: var(--ink-faint); }
+
+/* ---------- Faixa de contagens ---------- */
+/* Grid com gap de 1px sobre fundo de linha: os "fios" são o próprio gap,
+   então nada quebra quando a faixa muda de número de colunas. */
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.resumo-item {
+  min-width: 0;
+  padding: 7px 10px;
+  background: var(--surface);
+}
+
+.resumo-num {
+  display: block;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.resumo-rot {
+  display: block;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+.resumo-item.t-ok   .resumo-num { color: var(--ok); }
+.resumo-item.t-warn .resumo-num { color: var(--warn); }
+.resumo-item.t-crit .resumo-num { color: var(--crit); }
+
+/* ---------- Controles ---------- */
+.controles { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.busca {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface);
+}
+.busca::placeholder { color: var(--ink-faint); }
+
+.filtros { display: flex; gap: 6px; flex-wrap: wrap; min-width: 0; }
+
+.chip {
+  padding: 7px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.chip:hover { border-color: var(--accent); color: var(--ink); }
+.chip[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+  font-weight: 550;
+}
+:root[data-theme="dark"] .chip[aria-pressed="true"],
+:root:not([data-theme="light"]) .chip[aria-pressed="true"] { color: #0C1214; }
+
+.acao {
+  padding: 7px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  cursor: pointer;
+}
+.acao:hover { border-color: var(--accent); }
+
+/* ---------- Região de rolagem ---------- */
+.rolagem {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ---------- Tabela ---------- */
+table { width: 100%; border-collapse: collapse; }
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line-strong);
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+tbody tr:hover td { background: var(--surface-2); }
+
+td.c-mono { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------- Pílula de situação ---------- */
+.pilula {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px 2px 7px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+.pilula::before {
+  content: "";
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.p-ok     { background: var(--ok-soft);     color: var(--ok); }
+.p-warn   { background: var(--warn-soft);   color: var(--warn); }
+.p-crit   { background: var(--crit-soft);   color: var(--crit); }
+.p-neutro { background: var(--surface-2);   color: var(--ink-muted); }
+
+/* ---------- Estados ---------- */
+.estado {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--ink-muted);
+}
+.estado strong { display: block; color: var(--ink); margin-bottom: 4px; font-weight: 600; }
+.estado.erro strong { color: var(--crit); }
+
+/* ---------- Celular ---------- */
+@media (max-width: 700px) {
+  .barra { gap: 8px; }
+  .resumo { grid-template-columns: repeat(2, 1fr); }
+
+  /* Busca e Atualizar dividem a primeira linha; os filtros viram uma
+     faixa de rolagem horizontal em vez de empilhar em três fileiras. */
+  .controles { gap: 6px; }
+  .busca { flex: 1 1 auto; }
+  .filtros {
+    order: 3;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filtros::-webkit-scrollbar { display: none; }
+  .chip { flex: none; }
+
+  /* A tabela vira registro */
+  thead { display: none; }
+  table, tbody, td { display: block; }
+
+  tbody tr {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--line);
+    padding: 11px max(14px, env(safe-area-inset-left)) 13px;
+  }
+  tbody tr:hover td { background: transparent; }
+
+  tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 2px 0;
+    border: 0;
+  }
+  tbody td::before {
+    content: attr(data-rotulo);
+    flex: none;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+  }
+  tbody td > * { text-align: right; }
+
+  /* Identificador e situação sobem para o topo do bloco: é o que se
+     escaneia. O restante segue como pares rótulo/valor. */
+  tbody td[data-chave="protocolo"] {
+    order: -2;
+    justify-content: flex-start;
+    font-size: 17px;
+    font-weight: 600;
+    padding-bottom: 3px;
+  }
+  tbody td[data-chave="situacao"] {
+    order: -1;
+    justify-content: flex-start;
+    padding-bottom: 8px;
+  }
+  tbody td[data-chave="protocolo"]::before,
+  tbody td[data-chave="situacao"]::before { display: none; }
+  tbody td[data-chave="protocolo"] > *,
+  tbody td[data-chave="situacao"] > * { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="barra-topo">
+    <h1 class="titulo">Painel de Casos</h1>
+    <span class="selo" id="selo-demo" hidden>Dados de demonstração</span>
+    <span class="carimbo" id="carimbo"></span>
+  </div>
+
+  <div class="resumo" id="resumo" role="group" aria-label="Contagem por situação"></div>
+
+  <div class="controles">
+    <input class="busca" id="busca" type="search" placeholder="Buscar protocolo, natureza, perito…"
+           autocomplete="off" aria-label="Buscar casos">
+    <div class="filtros" id="filtros" role="group" aria-label="Filtrar por situação"></div>
+    <button class="acao" id="atualizar" type="button">Atualizar</button>
+  </div>
+</header>
+
+<main class="rolagem">
+  <div id="conteudo">
+    <p class="estado">Carregando casos…</p>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   Configuração — ajuste apenas este bloco.
+   'chave' precisa bater com o cabeçalho da planilha depois de
+   normalizado (minúscula, sem acento, sem espaço). Ex.: a coluna
+   "Situação" vira 'situacao'.
+   ============================================================ */
+var COLUNAS = [
+  { chave: 'protocolo', rotulo: 'Protocolo', tipo: 'mono' },
+  { chave: 'entrada',   rotulo: 'Entrada',   tipo: 'mono' },
+  { chave: 'natureza',  rotulo: 'Natureza',  tipo: 'texto' },
+  { chave: 'unidade',   rotulo: 'Unidade',   tipo: 'texto' },
+  { chave: 'perito',    rotulo: 'Perito',    tipo: 'texto' },
+  { chave: 'prazo',     rotulo: 'Prazo',     tipo: 'mono' },
+  { chave: 'situacao',  rotulo: 'Situação',  tipo: 'situacao' }
+];
+
+/* Situação da planilha -> rótulo exibido + tom semântico */
+var SITUACOES = {
+  'concluido':    { rotulo: 'Concluído',    tom: 'ok' },
+  'em andamento': { rotulo: 'Em andamento', tom: 'warn' },
+  'atrasado':     { rotulo: 'Atrasado',     tom: 'crit' },
+  'aguardando':   { rotulo: 'Aguardando',   tom: 'neutro' }
+};
+
+/* ============================================================ */
+
+var casos = [];
+var filtroSituacao = null;
+var termo = '';
+
+function normalizar(v) {
+  return String(v == null ? '' : v)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().trim();
+}
+
+function situacaoDe(caso) {
+  var bruto = normalizar(caso.situacao);
+  return SITUACOES[bruto] || { rotulo: caso.situacao || '—', tom: 'neutro' };
+}
+
+/* ---------- Origem dos dados ----------
+   Publicado como app da web: busca da planilha via Apps Script.
+   Aberto fora do Apps Script (pré-visualização): usa o exemplo abaixo. */
+var NO_APPS_SCRIPT =
+  typeof google !== 'undefined' && google.script && google.script.run;
+
+var EXEMPLO = [
+  { protocolo: 'DEMO-0001', entrada: '02/06/2026', natureza: 'Videoanálise',        unidade: 'Unidade A', perito: 'Servidor 1', prazo: '30/06/2026', situacao: 'Em andamento' },
+  { protocolo: 'DEMO-0002', entrada: '02/06/2026', natureza: 'Informática',          unidade: 'Unidade B', perito: 'Servidor 2', prazo: '18/06/2026', situacao: 'Atrasado' },
+  { protocolo: 'DEMO-0003', entrada: '05/06/2026', natureza: 'Local de sinistro',    unidade: 'Unidade A', perito: 'Servidor 1', prazo: '05/07/2026', situacao: 'Concluído' },
+  { protocolo: 'DEMO-0004', entrada: '09/06/2026', natureza: 'Documentoscopia',      unidade: 'Unidade C', perito: 'Servidor 3', prazo: '09/07/2026', situacao: 'Aguardando' },
+  { protocolo: 'DEMO-0005', entrada: '11/06/2026', natureza: 'Videoanálise',         unidade: 'Unidade B', perito: 'Servidor 2', prazo: '11/07/2026', situacao: 'Em andamento' },
+  { protocolo: 'DEMO-0006', entrada: '14/06/2026', natureza: 'Balística',            unidade: 'Unidade A', perito: 'Servidor 4', prazo: '20/06/2026', situacao: 'Atrasado' },
+  { protocolo: 'DEMO-0007', entrada: '17/06/2026', natureza: 'Informática',          unidade: 'Unidade C', perito: 'Servidor 3', prazo: '17/07/2026', situacao: 'Concluído' },
+  { protocolo: 'DEMO-0008', entrada: '21/06/2026', natureza: 'Local de sinistro',    unidade: 'Unidade B', perito: 'Servidor 1', prazo: '21/07/2026', situacao: 'Em andamento' }
+];
+
+function carregar() {
+  mostrarEstado('Carregando casos…');
+  if (NO_APPS_SCRIPT) {
+    google.script.run
+      .withSuccessHandler(receber)
+      .withFailureHandler(falhar)
+      .getCasos();
+  } else {
+    document.getElementById('selo-demo').hidden = false;
+    receber(EXEMPLO);
+  }
+}
+
+function receber(lista) {
+  casos = Array.isArray(lista) ? lista : [];
+  var agora = new Date();
+  document.getElementById('carimbo').textContent =
+    casos.length + (casos.length === 1 ? ' caso' : ' casos') +
+    ' · atualizado às ' +
+    agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  desenharResumo();
+  desenharFiltros();
+  desenhar();
+}
+
+function falhar(erro) {
+  var alvo = document.getElementById('conteudo');
+  alvo.textContent = '';
+  var p = document.createElement('p');
+  p.className = 'estado erro';
+  var s = document.createElement('strong');
+  s.textContent = 'Não foi possível carregar os casos.';
+  p.appendChild(s);
+  p.appendChild(document.createTextNode(
+    (erro && erro.message ? erro.message : String(erro)) +
+    ' — verifique se você está na conta institucional e tente Atualizar.'));
+  alvo.appendChild(p);
+}
+
+function mostrarEstado(texto) {
+  var alvo = document.getElementById('conteudo');
+  alvo.textContent = '';
+  var p = document.createElement('p');
+  p.className = 'estado';
+  p.textContent = texto;
+  alvo.appendChild(p);
+}
+
+function desenharResumo() {
+  var ordem = ['crit', 'warn', 'neutro', 'ok'];
+  var nomes = { crit: 'Atrasados', warn: 'Em andamento', neutro: 'Aguardando', ok: 'Concluídos' };
+  var contagem = { crit: 0, warn: 0, neutro: 0, ok: 0 };
+  casos.forEach(function (c) { contagem[situacaoDe(c).tom]++; });
+
+  var alvo = document.getElementById('resumo');
+  alvo.textContent = '';
+
+  ordem.forEach(function (tom) {
+    var d = document.createElement('div');
+    d.className = 'resumo-item t-' + tom;
+    var n = document.createElement('span'); n.className = 'resumo-num'; n.textContent = contagem[tom];
+    var r = document.createElement('span'); r.className = 'resumo-rot'; r.textContent = nomes[tom];
+    d.appendChild(n); d.appendChild(r);
+    alvo.appendChild(d);
+  });
+}
+
+function desenharFiltros() {
+  var alvo = document.getElementById('filtros');
+  alvo.textContent = '';
+  var presentes = [];
+  casos.forEach(function (c) {
+    var s = situacaoDe(c);
+    if (presentes.indexOf(s.rotulo) === -1) presentes.push(s.rotulo);
+  });
+  presentes.sort();
+  presentes.unshift('Todos');
+
+  presentes.forEach(function (rotulo) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.textContent = rotulo;
+    var valor = (rotulo === 'Todos') ? null : rotulo;
+    b.setAttribute('aria-pressed', String(filtroSituacao === valor));
+    b.addEventListener('click', function () {
+      filtroSituacao = valor;
+      desenharFiltros();
+      desenhar();
+    });
+    alvo.appendChild(b);
+  });
+}
+
+function filtrados() {
+  return casos.filter(function (c) {
+    if (filtroSituacao && situacaoDe(c).rotulo !== filtroSituacao) return false;
+    if (!termo) return true;
+    return COLUNAS.some(function (col) {
+      return normalizar(c[col.chave]).indexOf(termo) !== -1;
+    });
+  });
+}
+
+function desenhar() {
+  var lista = filtrados();
+  var alvo = document.getElementById('conteudo');
+  alvo.textContent = '';
+
+  if (!lista.length) {
+    var p = document.createElement('p');
+    p.className = 'estado';
+    var s = document.createElement('strong');
+    s.textContent = casos.length ? 'Nenhum caso corresponde ao filtro.' : 'Nenhum caso registrado.';
+    p.appendChild(s);
+    if (casos.length) p.appendChild(document.createTextNode('Ajuste a busca ou volte para “Todos”.'));
+    alvo.appendChild(p);
+    return;
+  }
+
+  var tabela = document.createElement('table');
+
+  var thead = document.createElement('thead');
+  var trh = document.createElement('tr');
+  COLUNAS.forEach(function (col) {
+    var th = document.createElement('th');
+    th.scope = 'col';
+    th.textContent = col.rotulo;
+    trh.appendChild(th);
+  });
+  thead.appendChild(trh);
+  tabela.appendChild(thead);
+
+  var tbody = document.createElement('tbody');
+  lista.forEach(function (caso) {
+    var tr = document.createElement('tr');
+    COLUNAS.forEach(function (col) {
+      var td = document.createElement('td');
+      td.setAttribute('data-rotulo', col.rotulo);
+      td.setAttribute('data-chave', col.chave);
+      if (col.tipo === 'mono') td.className = 'c-mono';
+
+      if (col.tipo === 'situacao') {
+        var s = situacaoDe(caso);
+        var pill = document.createElement('span');
+        pill.className = 'pilula p-' + s.tom;
+        pill.textContent = s.rotulo;
+        td.appendChild(pill);
+      } else {
+        var span = document.createElement('span');
+        span.textContent = caso[col.chave] || '—';
+        td.appendChild(span);
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tabela.appendChild(tbody);
+
+  alvo.appendChild(tabela);
+}
+
+document.getElementById('busca').addEventListener('input', function (e) {
+  termo = normalizar(e.target.value);
+  desenhar();
+});
+document.getElementById('atualizar').addEventListener('click', carregar);
+
+carregar();
+</script>
+
+</body>
+</html>
