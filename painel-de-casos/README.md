@@ -11,7 +11,12 @@ bloco de incorporação: altura fixa em px, rolagem dupla, `100vh` inoperante,
 |---|---|
 | `Codigo.gs` | Projeto do Apps Script, arquivo de script |
 | `index.html` | Projeto do Apps Script, arquivo HTML chamado `index` |
+| `appsscript.json` | Manifesto do projeto (projeto autônomo) |
+| `appsscript.vinculado.json` | Manifesto alternativo, para projeto vinculado à planilha |
 | `PEDIDO-TI.md` | Texto para solicitar o subdomínio ao TI |
+
+Para editar o manifesto no editor do Apps Script:
+`Configurações do projeto > Mostrar "appsscript.json" no editor`.
 
 ## Publicação
 
@@ -66,6 +71,89 @@ subdomínio, os favoritos e os ícones instalados nos celulares.
 
 - **Sem recursos externos.** Nenhuma fonte, biblioteca ou imagem de CDN.
   Carrega rápido, funciona em rede restrita e não depende de terceiros.
+
+## Segurança
+
+A implantação roda com a autorização do **proprietário**. Quem abre o painel
+não precisa ter acesso à planilha — o script acessa por ele. Isso é o que faz o
+painel funcionar, e também o que exige cuidado com o que o código expõe.
+
+### Toda função global é um endpoint público
+
+Qualquer pessoa que consiga abrir o app pode chamar **qualquer função de topo**
+digitando `google.script.run.<nome>()` no console do navegador, sem passar
+pelos controles do painel. Para conferir o que está exposto:
+
+```sh
+grep -nE '^function [A-Za-z0-9_]+' Codigo.gs
+```
+
+Hoje devolve apenas `doGet` e `getCasos`. Auxiliares ficam em `Interno.*`:
+método de objeto não é função global, então o `google.script.run` não alcança.
+
+### A regra que sustenta tudo
+
+**Nenhuma função exposta pode aceitar identificador de arquivo vindo do
+cliente.** `getCasos()` não recebe parâmetro justamente por isso — a origem dos
+dados é decidida no servidor. O anti-padrão que quebraria o modelo:
+
+```javascript
+// NUNCA num app da web: vira leitor sob demanda das planilhas do proprietário
+function lerPlanilha(id) { return SpreadsheetApp.openById(id)/* ... */; }
+```
+
+### Escopo
+
+`appsscript.json` fixa `.../auth/spreadsheets` — amplo: alcança **todas as
+planilhas do proprietário**. A planilha certa é garantida pelo código, não pela
+permissão. Fixar o escopo no manifesto faz com que código novo que tente ir
+além (por exemplo `DriveApp`) falhe e exija reautorização visível, em vez de
+herdar acesso em silêncio.
+
+**Opção mais restrita:** criar o projeto **vinculado** à planilha
+(nela, `Extensões > Apps Script`), trocar o corpo de `Interno.abrirPlanilha`
+por `return SpreadsheetApp.getActive();` e usar
+`appsscript.vinculado.json`. O escopo cai para
+`.../auth/spreadsheets.currentonly`, que não alcança nenhum outro arquivo — nem
+se alguém inserir código malicioso no projeto. Deixa de depender de disciplina
+no código e passa a depender da permissão.
+
+Duas ressalvas antes de escolher essa opção:
+
+- Vincular significa **outro projeto**, logo **outra URL `/exec`**. Decida
+  antes de pedir o subdomínio ao TI, senão o redirect nasce apontando para o
+  lugar errado.
+- Valide `spreadsheets.currentonly` publicando e abrindo o painel de fato. É o
+  escopo pensado para o contexto do documento, e vale confirmar o
+  comportamento no contexto de app da web antes de confiar nele.
+
+### Iframe
+
+`doGet` usa `XFrameOptionsMode.DEFAULT`, que impede sites de terceiros de
+embutir o painel — fecha clickjacking contra um servidor já autenticado.
+`ALLOWALL` só é necessário para incorporar no Google Sites; servindo pelo
+subdomínio, não use.
+
+### Quem pode alterar o código
+
+O projeto do Apps Script é um arquivo no Drive, com compartilhamento próprio.
+Quem tiver **edição** nele (direta, ou pela pasta / Drive compartilhado que o
+contém) pode publicar nova versão na implantação existente, e o código alterado
+passa a rodar na URL que a equipe já usa. Revise essa lista periodicamente.
+
+### Restringir a um subgrupo
+
+O controle "qualquer pessoa no domínio" é grosso: hoje qualquer servidor do
+domínio lê todos os casos. Para restringir mais, filtre no início de
+`getCasos()` com `Session.getActiveUser().getEmail()` contra uma lista de
+e-mails — o método é confiável neste arranjo, porque acessante e proprietário
+estão no mesmo domínio.
+
+### Conteúdo da planilha
+
+O painel monta a tabela com `createElement` e `textContent`, nunca com
+`innerHTML` sobre os dados. Uma célula contendo HTML aparece como texto
+literal, não executa.
 
 ## Pré-visualização sem publicar
 
